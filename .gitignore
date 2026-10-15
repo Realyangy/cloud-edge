@@ -31,7 +31,7 @@ test_qwen.py
 tests/
 启动运维面板.cmd
 
-# Local model weights and packaged artifacts
+# Local model weights, generated results, and packaged artifacts
 model/
 *.safetensors
 *.gguf
@@ -40,4 +40,7 @@ model/
 offline-requantization/input/
 offline-requantization/source/
 offline-requantization/SHA256SUMS
+offline-requantization/verification/baseline-metrics.json
 aiops-inference-alert-bundle/metadata/*.sha256
+aiops-inference-alert-bundle/reference_results/
+app/data/

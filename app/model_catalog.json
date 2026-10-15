@@ -1,0 +1,26 @@
+[
+  {
+    "id": "qwen25-05b-aiops",
+    "name": "Qwen2.5-0.5B · AIOps 2020 微调",
+    "path": "/root/cloud-webui/cloud-model-lib/Qwen2.5-0.5B-aiops/model",
+    "model_role": "生成式故障检测模型",
+    "training_domain": "AIOps 2020；已合并微调权重",
+    "supported_tasks": ["结构化运维输入的异常检测", "故障类型与原因分析", "生成检测报告"],
+    "input_description": "与微调训练模板一致的运维指标/日志输入，需要端侧采集结果转换为训练时的输入格式",
+    "output_description": "is_anomaly、fault_type、root_cause_component、confidence、evidence、recommendation 等 JSON 字段",
+    "limitations": "尚不能据模型名称推断其对所有网络、温度、软件故障的覆盖率；需要实际数据验证",
+    "parameter_billions": 0.5
+  },
+  {
+    "id": "sentence-bert-v2",
+    "name": "Sentence-BERT · v2",
+    "path": "/root/cloud-webui/cloud-model-lib/Sentence-BERT/v2",
+    "model_role": "文本向量编码模型",
+    "training_domain": "具体基础型号和训练任务待配置文件/模型说明确认",
+    "supported_tasks": ["文本语义编码", "日志相似度匹配", "相似故障检索"],
+    "input_description": "文本或日志描述",
+    "output_description": "文本向量，需搭配检索库/分类器完成后续任务",
+    "limitations": "单独使用不能生成故障诊断报告和修复建议；目前未提供配套分类器或故障索引",
+    "parameter_billions": null
+  }
+]
