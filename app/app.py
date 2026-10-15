@@ -230,6 +230,13 @@ def artifact_path(kind, identifier):
     return path
 
 
+def save_model_progress(selection_id, progress):
+    path = DATA / "model_progress" / (selection_id + ".json")
+    temporary = path.with_suffix(".json.tmp")
+    temporary.write_text(dump(progress), encoding="utf-8")
+    temporary.replace(path)
+
+
 def read_artifact(kind, identifier):
     return json.loads(artifact_path(kind, identifier).read_text(encoding="utf-8"))
 
@@ -304,7 +311,7 @@ def send_model(selection_id: str):
         db.execute("INSERT OR IGNORE INTO model_deliveries VALUES (?,?,?,?,NULL)", (selection_id, record["node_id"], model_id, now_iso()))
     progress_path = DATA / "model_progress" / (selection_id + ".json")
     if not progress_path.exists():
-        progress_path.write_text(dump({"status": "queued", "bytes_received": 0, "total_bytes": None, "updated_at": now_iso()}), encoding="utf-8")
+        save_model_progress(selection_id, {"status": "queued", "bytes_received": 0, "total_bytes": None, "updated_at": now_iso()})
     return {"status": "queued", "message": "模型文件已加入下发队列；接收后仍需端侧运行时和输入适配"}
 
 
@@ -326,12 +333,37 @@ def model_package(selection_id: str):
         if not target.exists():
             temporary = target.with_suffix(".partial")
             try:
+                source = Path(card["path"])
+                files = [file for file in source.rglob("*") if file.is_file()]
+                total_bytes = sum(file.stat().st_size for file in files)
+                packaged_bytes = 0
+                last_update = 0.0
+                save_model_progress(selection_id, {
+                    "status": "preparing", "bytes_received": 0, "total_bytes": total_bytes,
+                    "percent": 0, "updated_at": now_iso(),
+                })
                 # 权重已压缩收益小，STORE 避免长时间占用云侧 CPU。
                 with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_STORED) as archive:
-                    source = Path(card["path"])
-                    for file in source.rglob("*"):
-                        if file.is_file():
-                            archive.write(file, file.relative_to(source).as_posix())
+                    for file in files:
+                        info = zipfile.ZipInfo(file.relative_to(source).as_posix())
+                        info.file_size = file.stat().st_size
+                        info.compress_type = zipfile.ZIP_STORED
+                        with file.open("rb") as input_file, archive.open(info, "w", force_zip64=True) as output_file:
+                            while True:
+                                chunk = input_file.read(1024 * 1024)
+                                if not chunk:
+                                    break
+                                output_file.write(chunk)
+                                packaged_bytes += len(chunk)
+                                now = time.monotonic()
+                                if now - last_update >= 0.5 or packaged_bytes == total_bytes:
+                                    save_model_progress(selection_id, {
+                                        "status": "preparing", "bytes_received": packaged_bytes,
+                                        "total_bytes": total_bytes,
+                                        "percent": round(100 * packaged_bytes / total_bytes, 1) if total_bytes else 100,
+                                        "updated_at": now_iso(),
+                                    })
+                                    last_update = now
                     archive.writestr("cloud_selection.json", dump(record))
                 temporary.replace(target)
             except OSError as exc:
@@ -348,8 +380,8 @@ def ack_model(node_id: str, selection_id: str):
             raise HTTPException(404, "下发记录不存在")
     progress_path = DATA / "model_progress" / (selection_id + ".json")
     progress = json.loads(progress_path.read_text(encoding="utf-8")) if progress_path.exists() else {}
-    progress.update(status="received", bytes_received=progress.get("total_bytes") or progress.get("bytes_received", 0), updated_at=now_iso())
-    progress_path.write_text(dump(progress), encoding="utf-8")
+    progress.update(status="received", percent=100, bytes_received=progress.get("total_bytes") or progress.get("bytes_received", 0), updated_at=now_iso())
+    save_model_progress(selection_id, progress)
     return {"status": "received", "message": "端侧已保存模型文件，尚未代表推理已启动"}
 
 
@@ -366,7 +398,7 @@ def model_progress(node_id: str, selection_id: str, body: ModelProgress):
         progress["percent"] = min(100, round(100 * body.bytes_received / body.total_bytes, 1))
     else:
         progress["percent"] = None
-    (DATA / "model_progress" / (selection_id + ".json")).write_text(dump(progress), encoding="utf-8")
+    save_model_progress(selection_id, progress)
     return {"status": body.phase}
 
 
