@@ -44,3 +44,9 @@ offline-requantization/verification/baseline-metrics.json
 aiops-inference-alert-bundle/metadata/*.sha256
 aiops-inference-alert-bundle/reference_results/
 app/data/
+# RF-SepEdge generated artifacts and local caches
+RF-SepEdge/**/output/
+RF-SepEdge/**/__pycache__/
+RF-SepEdge/**/.pytest_cache/
+RF-SepEdge/**/.ipynb_checkpoints/
+RF-SepEdge/**/*.pyc
