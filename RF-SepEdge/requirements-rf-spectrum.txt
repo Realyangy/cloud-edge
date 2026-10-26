@@ -1,0 +1,21 @@
+# Reproduces the CUDA 12.8 PyTorch/TorchSig environment used on Lab-5090.
+# Create the environment with Python 3.10 before installing this file.
+--extra-index-url https://download.pytorch.org/whl/cu128
+
+torch==2.9.1+cu128
+torchvision==0.24.1+cu128
+torchaudio==2.9.1+cu128
+numpy==2.2.6
+scipy==1.13.1
+h5py==3.16.0
+matplotlib==3.9.2
+opencv-python==4.10.0.84
+pillow==12.3.0
+PyYAML==6.0.3
+omegaconf==2.4.0
+tqdm==4.70.1
+lightning==2.5.5
+pytorch-lightning==2.5.2
+ultralytics==8.4.183
+torchsig==2.1.1
+-e ./spectrum-analysis/torchsig-models-1.0.0

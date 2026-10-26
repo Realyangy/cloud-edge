@@ -15,6 +15,8 @@
 RF-SepEdge/
 ├── README.md
 ├── AUDIT.md                         # 代码整理前的历史源码审查记录
+├── requirements-rf-sionna.txt      # Sionna 数据生成与解调环境
+├── requirements-rf-spectrum.txt    # WaveNet、YOLO 和 XCiT 环境
 ├── signal-separation/
 │   ├── mit_sionna_official_smoke.py
 │   ├── mit_sionna_wavenet_infer.py
@@ -69,6 +71,47 @@ RF-SepEdge/
 
 这里的“家族准确率”表示对 ASK、PSK、QAM、FSK、OFDM 等调制家族的判断；“57 类 Top-1”要求识别到具体调制子类，难度更高。V3 已显著解决联合输入下的家族识别问题，但细粒度 57 类识别仍有继续优化空间。以上均为本地生成样本上的结果，不是官方隐藏测试集成绩。
 
+## 环境安装
+
+两个任务需要两个独立环境，不能将所有依赖安装到同一个 Python 环境中：
+
+| 环境 | Python | 用途 | 依赖文件 |
+|---|---:|---|---|
+| `rf-sionna` | 3.7.13 | MIT 数据生成、Sionna 解调和 BER 计算，当前按 CPU 运行 | `requirements-rf-sionna.txt` |
+| `rf-spectrum` | 3.10.0 | WaveNet 推理、TorchSig 数据、YOLO 检测、XCiT 推理与微调 | `requirements-rf-spectrum.txt` |
+
+### 1. 创建 Sionna 环境
+
+```bash
+conda create -n rf-sionna python=3.7.13 pip -y
+conda activate rf-sionna
+python -m pip install -r requirements-rf-sionna.txt
+```
+
+安装后可执行以下命令检查核心依赖：
+
+```bash
+python -c "import tensorflow, sionna, numpy, scipy, h5py; print(tensorflow.__version__, sionna.__version__)"
+```
+
+### 2. 创建 PyTorch/TorchSig 环境
+
+```bash
+conda create -n rf-spectrum python=3.10.0 pip -y
+conda activate rf-spectrum
+python -m pip install -r requirements-rf-spectrum.txt
+```
+
+`requirements-rf-spectrum.txt` 固定为 Lab-5090 当前验证过的 CUDA 12.8 PyTorch 版本，并从仓库中的 `spectrum-analysis/torchsig-models-1.0.0/` 安装本地 TorchSig Models 源码，因此安装命令应在 `RF-SepEdge` 根目录执行。目标机器必须具有兼容的 NVIDIA 驱动；如果只能使用其他 CUDA 版本，应先按照目标 CUDA 版本安装对应的 PyTorch，再安装文件中的其余依赖。
+
+安装后可执行以下命令检查核心依赖和 CUDA：
+
+```bash
+python -c "import torch, torchsig, ultralytics; from torchsig_models.models import XCiTClassifier; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
+```
+
+服务器中的旧文件 `signal-separation/rfchallenge/rfsionna_env.yml` 和 `rftorch_env.yml` 来自 MIT 官方基线，包含原作者机器上的绝对路径及大量 Jupyter 依赖，仅作为历史参考；本项目复现应优先使用根目录的两份精简 requirements。
+
 ## 运行与复现
 
 请进入对应子目录并参照各自 README：
@@ -76,7 +119,7 @@ RF-SepEdge/
 - [WaveNet：数据生成 → 推理 → 官方解调 → SINR 汇总](signal-separation/README.md)
 - [YOLO + XCiT：物理测试 → YOLO 评测 → 联合 V3 推理与评测 → 可选重新微调](spectrum-analysis/README.md)
 
-两个任务使用不同环境：MIT 的 Sionna 生成/解调阶段使用 `rf-sionna`（CPU）；MIT WaveNet 推理以及 TorchSig/YOLO/XCiT 使用 `rf-spectrum`（PyTorch GPU）。数据集和模型权重由 Git LFS 管理，克隆仓库前应先安装 Git LFS。
+运行脚本前应按照上面的任务类型激活 `rf-sionna` 或 `rf-spectrum`。数据集和模型权重由 Git LFS 管理，克隆仓库前应先安装 Git LFS。
 
 各脚本对部分输出目录设置了**非空目录拒绝覆盖**保护。重新运行时应选择新输出目录，或在确认备份后手动清空旧结果；不要直接将不同实验混入同一个目录。
 
