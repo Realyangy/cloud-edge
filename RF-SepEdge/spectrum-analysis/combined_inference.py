@@ -53,7 +53,7 @@ YOLO_WEIGHTS = ROOT / "models" / "yolo11n_wideband_v1.0.0.pt"
 # The released narrowband checkpoint is preserved at
 # models/xcit_narrowband_v1.0.0.ckpt. The joint pipeline defaults to a copy
 # fine-tuned on GT-box extractions from independent wideband streams.
-XCIT_WEIGHTS = ROOT / "models" / "finetuned" / "xcit_joint_v3.ckpt"
+XCIT_WEIGHTS = ROOT / "models" / "finetuned" / "xcit_joint_v4.ckpt"
 NUM_XCIT_SAMPLES = 4096
 
 

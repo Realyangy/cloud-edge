@@ -48,7 +48,7 @@ def parse_args():
     p.add_argument('--config', type=Path, default=ROOT/'configs/wideband_clean_val_all.yaml')
     p.add_argument('--yolo-weights', type=Path, default=ROOT/'models/yolo11n_wideband_v1.0.0.pt')
     p.add_argument('--xcit-weights', type=Path,
-                   default=ROOT/'models/finetuned/xcit_joint_v3.ckpt')
+                   default=ROOT/'models/finetuned/xcit_joint_v4.ckpt')
     p.add_argument('--device', default='auto', help='auto, cpu, 0 after CUDA_VISIBLE_DEVICES mapping')
     p.add_argument('--rms-targets', type=float, nargs='+', default=[1.0],
                    help='Complex RMS values to test after normalization (default: 1.0)')
