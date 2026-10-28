@@ -34,7 +34,9 @@ import numpy as np
 
 SIGNAL_LENGTH = 40960
 SOI_TYPES = ('QPSK', 'OFDMQPSK')
-INTERFERENCE = 'CommSignal2'
+SUPPORTED_INTERFERENCES = (
+    'CommSignal2', 'CommSignal3', 'CommSignal5G1', 'EMISignal1',
+)
 BITS_PER_SIGNAL = {'QPSK': 5120, 'OFDMQPSK': 57344}
 
 
@@ -68,6 +70,10 @@ def main():
     p.add_argument('--source', type=Path, default=Path('output/mit_sionna_official_smoke'))
     p.add_argument('--predictions', type=Path, default=Path('output/mit_sionna_wavenet_infer'))
     p.add_argument('--out', type=Path, default=Path('output/mit_sionna_official_ber'))
+    p.add_argument(
+        '--interference', choices=SUPPORTED_INTERFERENCES,
+        help='Expected interference type; defaults to the generated source manifest',
+    )
     args = p.parse_args()
     root = args.root.resolve()
     source = (args.source if args.source.is_absolute() else root / args.source).resolve()
@@ -83,12 +89,22 @@ def main():
         manifest = json.load(f)
     with inference_summary_path.open('r', encoding='utf-8') as f:
         infer_summary = json.load(f)
-    if manifest.get('interference') != INTERFERENCE:
-        raise ValueError('Expected {} generated mini-set'.format(INTERFERENCE))
+    interference = manifest.get('interference')
+    if interference not in SUPPORTED_INTERFERENCES:
+        raise ValueError('Unsupported interference type in source manifest: {}'.format(interference))
+    if args.interference is not None and args.interference != interference:
+        raise ValueError('--interference {} does not match source manifest {}'.format(
+            args.interference, interference))
     if set(v['soi_type'] for v in manifest.get('results', [])) != set(SOI_TYPES):
         raise ValueError('Missing QPSK or OFDMQPSK in generator summary')
     if set(v['soi_type'] for v in infer_summary.get('models', [])) != set(SOI_TYPES):
         raise ValueError('Missing QPSK or OFDMQPSK in inference summary')
+    inference_interference = infer_summary.get('interference')
+    if inference_interference is not None and inference_interference != interference:
+        raise ValueError('Inference summary interference does not match generated source')
+    if any(v.get('interference_type') != interference
+           for v in infer_summary.get('models', [])):
+        raise ValueError('Inference model records contain a different interference type')
 
     import tensorflow as tf
     import sionna
@@ -113,10 +129,10 @@ def main():
     all_rows = []
     results = []
     for soi in SOI_TYPES:
-        stem = 'TestSet1Example_testmixture_{}_{}'.format(soi, INTERFERENCE)
+        stem = 'TestSet1Example_testmixture_{}_{}'.format(soi, interference)
         mix_file = source / 'dataset' / (stem + '.npy')
-        truth_file = source / 'dataset' / 'GroundTruth_TestSet1Example_Dataset_{}_{}.pkl'.format(soi, INTERFERENCE)
-        pred_file = predicted / ('estimated_soi_{}_{}.npy'.format(soi, INTERFERENCE))
+        truth_file = source / 'dataset' / 'GroundTruth_TestSet1Example_Dataset_{}_{}.pkl'.format(soi, interference)
+        pred_file = predicted / ('estimated_soi_{}_{}.npy'.format(soi, interference))
         for f in (mix_file, truth_file, pred_file):
             if not f.is_file():
                 raise FileNotFoundError(f)
@@ -168,10 +184,10 @@ def main():
         ber_input = np.mean(mix_bits != true_bits, axis=1)
         ber_pred = np.mean(pred_bits != true_bits, axis=1)
         nmse_pred_db = power_to_db(mse_pred / np.maximum(reference_power, 1e-30))
-        print('\n===== {} + {}: {} samples ====='.format(soi, INTERFERENCE, n), flush=True)
+        print('\n===== {} + {}: {} samples ====='.format(soi, interference, n), flush=True)
         for i in range(n):
             row = {
-                'soi_type': soi, 'interference': INTERFERENCE,
+                'soi_type': soi, 'interference': interference,
                 'sample_index': i, 'bit_count': BITS_PER_SIGNAL[soi],
                 'actual_input_sinr_db': float(actual_sinr_db[i]),
                 'input_mse_db': float(power_to_db(mse_input[i])),
@@ -187,10 +203,10 @@ def main():
                 i, row['actual_input_sinr_db'], row['input_ber'],
                 row['wavenet_ber'], row['wavenet_mse_db']), flush=True)
 
-        bits_file = out / 'estimated_bits_{}_{}.npy'.format(soi, INTERFERENCE)
+        bits_file = out / 'estimated_bits_{}_{}.npy'.format(soi, interference)
         np.save(str(bits_file), pred_bits)
         results.append({
-            'soi_type': soi, 'interference': INTERFERENCE,
+            'soi_type': soi, 'interference': interference,
             'samples': n, 'bit_count_per_sample': BITS_PER_SIGNAL[soi],
             'mean_input_ber': float(np.mean(ber_input)),
             'mean_wavenet_ber': float(np.mean(ber_pred)),

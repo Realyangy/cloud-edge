@@ -1,13 +1,13 @@
 # 信号分离与恢复：MIT Sionna + WaveNet
 
-**状态（2026-10-23）**：QPSK 与 OFDM-QPSK 两类目标信号、CommSignal2 干扰的 Seed 42 本地基线已完成。该任务与 `spectrum-analysis` 独立运行。
+**状态（2026-10-28）**：QPSK 与 OFDM-QPSK 两类目标信号、CommSignal2 干扰的 Seed 42 本地基线已完成。四种现有干扰的数据和预训练权重均已就绪，生成、推理和 BER 脚本现已支持按 `--interference` 选择干扰；其余三种干扰的正式实验等待 GPU 空闲后执行。该任务与 `spectrum-analysis` 独立运行。
 
 ## 数据、模型与环境
 
 - 官方代码：`rfchallenge/`，MIT RF Challenge 0.2.0。
 - 目标信号：`QPSK`（每条 5,120 个原始比特）、`OFDMQPSK`（每条 57,344 个原始比特）。
-- 干扰：`dataset/testset1_frame/CommSignal2_test1_raw_data.h5`；生成器使用官方 Sionna 代码生成 SOI 并与干扰混合，保存 SOI/IQ/比特真值。
-- 输入：每条 **40,960 个 complex64 IQ 点**；两类信号分别使用 `pretrained-models/WaveNet/dataset_qpsk_commsignal2_mixture_wavenet/weights.pt` 与 `pretrained-models/WaveNet/dataset_ofdmqpsk_commsignal2_mixture_wavenet/weights.pt`。
+- 干扰：支持 `CommSignal2`、`CommSignal3`、`CommSignal5G1`、`EMISignal1`；对应 HDF5 位于 `dataset/testset1_frame/`。生成器使用官方 Sionna 代码生成 SOI 并与所选干扰混合，保存 SOI/IQ/比特真值。
+- 输入：每条 **40,960 个 complex64 IQ 点**；两类目标和四种干扰的八组预训练权重位于 `pretrained-models/WaveNet/dataset_<soi>_<interference>_mixture_wavenet/weights.pt`。
 - 环境一：`rf-sionna`（Python 3.7.13、TensorFlow 2.8.2、Sionna 0.10.0；**CPU 生成/解调**）。
 - 环境二：`rf-spectrum`（Python 3.10、PyTorch 2.9.1+cu128；**GPU WaveNet 推理**）。
 
@@ -28,12 +28,14 @@ CUDA_VISIBLE_DEVICES=-1 python mit_sionna_official_smoke.py \
 # 2. WaveNet 恢复 IQ
 conda activate rf-spectrum
 CUDA_VISIBLE_DEVICES=1 python mit_sionna_wavenet_infer.py \
+  --interference CommSignal2 \
   --source output/mit_sionna_seed42 \
   --out output/mit_sionna_seed42_infer --batch-size 1
 
 # 3. Sionna 官方解调辅助函数、BER/MSE 评估
 conda activate rf-sionna
 CUDA_VISIBLE_DEVICES=-1 python mit_sionna_official_ber.py \
+  --interference CommSignal2 \
   --source output/mit_sionna_seed42 \
   --predictions output/mit_sionna_seed42_infer \
   --out output/mit_sionna_seed42_ber
@@ -44,6 +46,45 @@ python summarize_sinr.py \
   --evaluated output/mit_sionna_seed42_ber \
   --out output/mit_sionna_seed42_report
 ```
+
+`mit_sionna_wavenet_infer.py` 和 `mit_sionna_official_ber.py` 会同时读取生成阶段的 `summary.json`，并检查命令行干扰类型是否与数据一致，防止误用其他干扰对应的权重或文件。
+
+## 四种干扰的待运行实验
+
+GPU 空闲后，可在 `signal-separation/` 目录运行下面的循环。每种干扰分别生成独立输出目录，不会覆盖现有 CommSignal2 结果。
+
+```bash
+for interference in CommSignal2 CommSignal3 CommSignal5G1 EMISignal1; do
+  slug=$(printf '%s' "$interference" | tr '[:upper:]' '[:lower:]')
+
+  conda run -n rf-sionna env CUDA_VISIBLE_DEVICES=-1 \
+    python mit_sionna_official_smoke.py \
+      --soi-types QPSK,OFDMQPSK --interference "$interference" \
+      --samples-per-sinr 10 --sinrs=-24,-18,-15,-12,-9,-6,0 \
+      --seed 42 --out "output/${slug}_seed42"
+
+  conda run -n rf-spectrum env CUDA_VISIBLE_DEVICES=1 \
+    python mit_sionna_wavenet_infer.py \
+      --interference "$interference" \
+      --source "output/${slug}_seed42" \
+      --out "output/${slug}_seed42_infer" --batch-size 1
+
+  conda run -n rf-sionna env CUDA_VISIBLE_DEVICES=-1 \
+    python mit_sionna_official_ber.py \
+      --interference "$interference" \
+      --source "output/${slug}_seed42" \
+      --predictions "output/${slug}_seed42_infer" \
+      --out "output/${slug}_seed42_ber"
+
+  conda run -n rf-sionna \
+    python summarize_sinr.py \
+      --generated "output/${slug}_seed42" \
+      --evaluated "output/${slug}_seed42_ber" \
+      --out "output/${slug}_seed42_report"
+done
+```
+
+第一次正式执行时可以先将 `--samples-per-sinr 10` 临时改为 `1`，确认四种干扰均能完成数据生成、权重选择、推理和解调，再运行完整规模。当前 GPU 不可用时不要启动上述循环。
 
 ### 保留的四类输出
 

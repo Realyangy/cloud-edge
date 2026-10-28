@@ -27,7 +27,9 @@ from pathlib import Path
 import numpy as np
 
 SOI_TYPES = ("QPSK", "OFDMQPSK")
-INTERFERENCE = "CommSignal2"
+SUPPORTED_INTERFERENCES = (
+    "CommSignal2", "CommSignal3", "CommSignal5G1", "EMISignal1",
+)
 SAMPLE_SIZE = 40960
 
 
@@ -58,6 +60,10 @@ def main():
     parser.add_argument("--source", type=Path, default=Path("output/mit_sionna_official_smoke"))
     parser.add_argument("--out", type=Path, default=Path("output/mit_sionna_wavenet_infer"))
     parser.add_argument("--batch-size", type=int, default=1)
+    parser.add_argument(
+        "--interference", choices=SUPPORTED_INTERFERENCES,
+        help="Expected interference type; defaults to the generated source manifest",
+    )
     args = parser.parse_args()
     if args.batch_size < 1 or args.batch_size > 8:
         raise ValueError("--batch-size must be 1..8 for smoke test")
@@ -72,8 +78,15 @@ def main():
 
     with manifest_file.open("r", encoding="utf-8") as stream:
         manifest = json.load(stream)
-    if manifest.get("interference") != INTERFERENCE:
-        raise ValueError("This script expects CommSignal2; got {}".format(manifest.get("interference")))
+    interference = manifest.get("interference")
+    if interference not in SUPPORTED_INTERFERENCES:
+        raise ValueError("Unsupported interference type in source manifest: {}".format(interference))
+    if args.interference is not None and args.interference != interference:
+        raise ValueError(
+            "--interference {} does not match source manifest {}".format(
+                args.interference, interference
+            )
+        )
     if sorted([r["soi_type"] for r in manifest.get("results", [])]) != sorted(SOI_TYPES):
         raise ValueError("Expected Sionna QPSK and OFDMQPSK source files in manifest")
 
@@ -98,14 +111,15 @@ def main():
     summary = {
         "stage": "WaveNet inference on official MIT Sionna-generated MINI-set, not complete official benchmark",
         "input_sionna_summary": str(manifest_file),
+        "interference": interference,
         "models": [],
     }
 
     for soi in SOI_TYPES:
-        stem = "TestSet1Example_testmixture_{}_{}".format(soi, INTERFERENCE)
+        stem = "TestSet1Example_testmixture_{}_{}".format(soi, interference)
         mix_path = source / "dataset" / (stem + ".npy")
-        truth_path = source / "dataset" / "GroundTruth_TestSet1Example_Dataset_{}_{}.pkl".format(soi, INTERFERENCE)
-        ckpt_path = root / "pretrained-models" / "WaveNet" / "dataset_{}_{}_mixture_wavenet".format(soi.lower(), INTERFERENCE.lower()) / "weights.pt"
+        truth_path = source / "dataset" / "GroundTruth_TestSet1Example_Dataset_{}_{}.pkl".format(soi, interference)
+        ckpt_path = root / "pretrained-models" / "WaveNet" / "dataset_{}_{}_mixture_wavenet".format(soi.lower(), interference.lower()) / "weights.pt"
         for path in (mix_path, truth_path, ckpt_path):
             if not path.is_file():
                 raise FileNotFoundError(str(path))
@@ -153,11 +167,11 @@ def main():
             np.maximum(np.mean(np.abs((mixtures - target).astype(np.complex128))**2, axis=1), 1e-30)
         )).tolist()
         # Exact output filenames are used by subsequent official Sionna demod evaluation.
-        pred_path = out / ("estimated_soi_{}_{}.npy".format(soi, INTERFERENCE))
+        pred_path = out / ("estimated_soi_{}_{}.npy".format(soi, interference))
         np.save(str(pred_path), estimate)
         rec = {
             "soi_type": soi,
-            "interference_type": INTERFERENCE,
+            "interference_type": interference,
             "n_samples": int(len(mixtures)),
             "iq_shape": list(mixtures.shape),
             "bit_shape": list(bits.shape),
@@ -168,7 +182,7 @@ def main():
             "estimated_soi_file": str(pred_path.relative_to(root)),
         }
         summary["models"].append(rec)
-        print("\n{} + {}: {} records".format(soi, INTERFERENCE, len(mixtures)), flush=True)
+        print("\n{} + {}: {} records".format(soi, interference, len(mixtures)), flush=True)
         for i in range(len(mixtures)):
             print("  record {} | SINR {:+.2f} dB | input MSE {:+.2f} dB | WaveNet MSE {:+.2f} dB | WaveNet NMSE {:+.2f} dB".format(
                 i, sinrs[i], input_stats["mse_db"][i], output_stats["mse_db"][i], output_stats["nmse_db"][i]
