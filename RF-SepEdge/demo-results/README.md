@@ -6,6 +6,12 @@
 
 ```text
 demo-results/
+├── manifest.json
+├── showcase/
+│   ├── mit-wavenet/                 # 24 条真实记录的波形、时频图和指标
+│   └── yolo-xcit-v4/                # 4 张真实时频图、检测框与局部特征
+├── yolo-detection/
+│   └── seed42-50/summary.json        # 50 图 YOLO 正式检测指标
 ├── signal-separation/
 │   ├── commsignal2/
 │   ├── commsignal3/
@@ -46,4 +52,10 @@ demo-results/
 
 ## 网页使用建议
 
-网页只需通过相对路径读取本目录中的 JSON/CSV。频谱任务的主展示数据建议使用 `spectrum-analysis/model-selection/v4-final/`；V3 和 `v4-hier-w05` 仅用于模型性能对比。信号分离任务可按干扰类型选择目录，再以 `nominal_sinr_db`、`input_ber`、`wavenet_ber`、`mean_input_mse_db` 和 `mean_wavenet_mse_db` 绘图。
+网页应首先读取根目录的 `manifest.json`，其中已经索引所有展示样本、指标 JSON 和 PNG 的相对路径。
+
+- `showcase/mit-wavenet/`：QPSK、OFDM-QPSK × 四种干扰 × `-18/-9/0 dB`，共 24 条代表性记录。每条记录的混合输入、目标真值、WaveNet 恢复结果均来自相同 `sample_index`，并提供复数 I/Q 波形、时频图、BER、MSE、实际 SINR 和数组 SHA-256。
+- `showcase/yolo-xcit-v4/`：Seed 161803 的 Sample 8、54、60、61。真实时频图由同一 Seed 数据流恢复，检测框和分类结果直接复用 `model-selection/v4-final/predictions.json`，没有重新执行 YOLO 或 XCiT 推理。
+- `yolo-detection/seed42-50/summary.json`：Seed 42、50 图、195 个 GT 的 YOLO 指标。旧生成目录清理后只保留了正式文档中的四位小数，因此未保留的 `mAP75` 没有补写或猜测。
+
+频谱任务的总体统计建议使用 `spectrum-analysis/model-selection/v4-final/`；V3 和 `v4-hier-w05` 仅用于模型性能对比。信号分离总体曲线仍可按干扰类型读取 `signal-separation/*/by_sinr.csv`。

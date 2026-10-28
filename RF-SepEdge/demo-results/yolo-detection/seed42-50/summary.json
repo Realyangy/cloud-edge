@@ -1,0 +1,15 @@
+{
+  "dataset_provenance": "TorchSig 2.1.1 wideband_clean_val_all validation-style generated samples; not an official hidden test set",
+  "model": "yolo11n_wideband_v1.0.0.pt",
+  "config_dataset_id": "wideband_clean_val_all",
+  "seed": 42,
+  "sample_count": 50,
+  "true_signal_count": 195,
+  "detector_class": "signal (single class)",
+  "IoU_0_5_precision_from_PR_curve": 0.9432,
+  "IoU_0_5_recall_from_PR_curve": 0.9282,
+  "mAP50": 0.9494,
+  "mAP50_95": 0.8282,
+  "value_precision_note": "Recovered to four decimal places from the formally documented completed run after generated output cleanup; mAP75 was not preserved and is intentionally omitted.",
+  "notes": "PR-derived precision/recall differ from fixed-conf=0.25 counts in combined evaluation."
+}

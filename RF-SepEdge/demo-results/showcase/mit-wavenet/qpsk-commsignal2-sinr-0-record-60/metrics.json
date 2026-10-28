@@ -1,0 +1,42 @@
+{
+  "record_id": "qpsk-commsignal2-sinr-0-record-60",
+  "task": "MIT WaveNet signal separation",
+  "seed": 42,
+  "soi_type": "QPSK",
+  "interference": "CommSignal2",
+  "nominal_sinr_db": 0.0,
+  "sample_index": 60,
+  "selection_method": "minimum robust distance to group medians of actual SINR, input BER, WaveNet BER, and WaveNet MSE",
+  "metrics": {
+    "soi_type": "QPSK",
+    "interference": "CommSignal2",
+    "sample_index": 60,
+    "bit_count": 5120,
+    "actual_input_sinr_db": -0.2615627455528471,
+    "input_mse_db": 0.2614851387963943,
+    "wavenet_mse_db": -43.88562860880113,
+    "wavenet_nmse_db": -43.885551002044664,
+    "input_bit_errors": 0,
+    "input_ber": 0.0,
+    "wavenet_bit_errors": 0,
+    "wavenet_ber": 0.0
+  },
+  "alignment_checks": {
+    "array_shape": [
+      40960
+    ],
+    "saved_mixture_matches_ground_truth_mixture": true,
+    "metrics_sample_index_matches_array_row": true
+  },
+  "array_sha256": {
+    "mixed_input": "d8a1e4c23cf8d589014b7d101d915a89820c1a241926045d239979a1aeffa23f",
+    "ground_truth_soi": "49a2148959dae596b73b416aac676c3ce3b32db3fcb9d61879c1d1dfe243b9ea",
+    "wavenet_restored": "b4b8d3a768db91952a86c85a82b605a17fedb6663dca06b23c7205683dd9a83a"
+  },
+  "display": {
+    "waveform_samples": 4096,
+    "frequency_axis": "normalized cycles/sample",
+    "waveforms": "waveforms.png",
+    "spectrograms": "spectrograms.png"
+  }
+}

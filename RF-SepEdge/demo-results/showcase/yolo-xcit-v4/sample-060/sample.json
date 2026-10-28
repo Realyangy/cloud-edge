@@ -1,0 +1,550 @@
+{
+  "task": "YOLO11n + XCiT V4",
+  "seed": 161803,
+  "sample_index": 60,
+  "source_predictions": "../../model-selection/v4-final/predictions.json",
+  "classification_recomputed": false,
+  "spectrogram_regenerated_from_same_seed_stream": true,
+  "ground_truth_count_check": 4,
+  "ground_truth_class_names": [
+    "2fsk",
+    "am-dsb-sc",
+    "fm",
+    "fm"
+  ],
+  "metrics": {
+    "ground_truth_count": 4,
+    "prediction_count": 4,
+    "TP": 4,
+    "FP": 0,
+    "FN": 0,
+    "matched_family_correct": 4,
+    "matched_fine_correct": 4
+  },
+  "predictions": [
+    {
+      "prediction_index": 0,
+      "confidence": 0.9082225561141968,
+      "box_xyxy_normalized": [
+        0.7465059757232666,
+        0.4075824022293091,
+        0.8320963382720947,
+        0.4567878246307373
+      ],
+      "without_rms": {
+        "fine_top1": "am-dsb-sc",
+        "fine_top1_confidence": 0.84415,
+        "fine_top5": [
+          {
+            "class": "am-dsb-sc",
+            "probability": 0.84415
+          },
+          {
+            "class": "am-dsb",
+            "probability": 0.154002
+          },
+          {
+            "class": "ook",
+            "probability": 0.000402
+          },
+          {
+            "class": "chirpss",
+            "probability": 0.00025
+          },
+          {
+            "class": "16ask",
+            "probability": 0.000208
+          }
+        ],
+        "family_from_fine_top1": "AM",
+        "family_top1": "AM",
+        "family_top1_probability_sum": 0.998453,
+        "family_probabilities": {
+          "AM": 0.998453,
+          "ASK/OOK": 0.0011,
+          "Other": 0.000387,
+          "FSK/GFSK": 3.3e-05,
+          "OFDM": 1.6e-05,
+          "MSK/GMSK": 9e-06,
+          "PSK": 2e-06,
+          "QAM": 0.0,
+          "FM": 0.0
+        }
+      },
+      "with_rms": {
+        "fine_top1": "am-dsb-sc",
+        "fine_top1_confidence": 0.934654,
+        "fine_top5": [
+          {
+            "class": "am-dsb-sc",
+            "probability": 0.934654
+          },
+          {
+            "class": "am-dsb",
+            "probability": 0.063502
+          },
+          {
+            "class": "64ask",
+            "probability": 0.000297
+          },
+          {
+            "class": "16ask",
+            "probability": 0.000286
+          },
+          {
+            "class": "32ask",
+            "probability": 0.000276
+          }
+        ],
+        "family_from_fine_top1": "AM",
+        "family_top1": "AM",
+        "family_top1_probability_sum": 0.9985,
+        "family_probabilities": {
+          "AM": 0.9985,
+          "ASK/OOK": 0.001172,
+          "Other": 0.000248,
+          "OFDM": 3.3e-05,
+          "FSK/GFSK": 3.1e-05,
+          "MSK/GMSK": 1.2e-05,
+          "PSK": 3e-06,
+          "QAM": 1e-06,
+          "FM": 0.0
+        }
+      },
+      "pre_normalization_rms": 0.5466353131299048,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.5466353131299048,
+        "start_sample": 195692,
+        "stop_sample_exclusive": 218130,
+        "input_iq_count": 22438,
+        "predicted_center_offset_hz": 678148.866,
+        "predicted_bandwidth_hz": 492054.224,
+        "lowpass_cutoff_hz": 295232.534,
+        "resample_up": 456,
+        "resample_down": 2449,
+        "estimated_output_rate_hz": 1861984.483,
+        "bandwidth_to_output_rate_ratio": 0.2643,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "am-dsb-sc",
+        "family": "AM"
+      }
+    },
+    {
+      "prediction_index": 1,
+      "confidence": 0.8860432505607605,
+      "box_xyxy_normalized": [
+        0.47393491864204407,
+        0.8247923851013184,
+        0.5503146648406982,
+        0.8667669296264648
+      ],
+      "without_rms": {
+        "fine_top1": "fm",
+        "fine_top1_confidence": 0.959599,
+        "fine_top5": [
+          {
+            "class": "fm",
+            "probability": 0.959599
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.022076
+          },
+          {
+            "class": "4gmsk",
+            "probability": 0.009356
+          },
+          {
+            "class": "2gmsk",
+            "probability": 0.007363
+          },
+          {
+            "class": "2gfsk",
+            "probability": 0.001356
+          }
+        ],
+        "family_from_fine_top1": "FM",
+        "family_top1": "FM",
+        "family_top1_probability_sum": 0.959599,
+        "family_probabilities": {
+          "FM": 0.959599,
+          "FSK/GFSK": 0.023489,
+          "MSK/GMSK": 0.016887,
+          "QAM": 1.3e-05,
+          "ASK/OOK": 1.1e-05,
+          "OFDM": 1e-06,
+          "PSK": 0.0,
+          "Other": 0.0,
+          "AM": 0.0
+        }
+      },
+      "with_rms": {
+        "fine_top1": "fm",
+        "fine_top1_confidence": 0.956055,
+        "fine_top5": [
+          {
+            "class": "fm",
+            "probability": 0.956055
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.025781
+          },
+          {
+            "class": "4gmsk",
+            "probability": 0.010856
+          },
+          {
+            "class": "2gmsk",
+            "probability": 0.00586
+          },
+          {
+            "class": "2gfsk",
+            "probability": 0.001227
+          }
+        ],
+        "family_from_fine_top1": "FM",
+        "family_top1": "FM",
+        "family_top1_probability_sum": 0.956055,
+        "family_probabilities": {
+          "FM": 0.956055,
+          "FSK/GFSK": 0.027086,
+          "MSK/GMSK": 0.016841,
+          "QAM": 9e-06,
+          "ASK/OOK": 8e-06,
+          "OFDM": 1e-06,
+          "PSK": 0.0,
+          "Other": 0.0,
+          "AM": 0.0
+        }
+      },
+      "pre_normalization_rms": 0.6943708873806708,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.6943708873806708,
+        "start_sample": 124239,
+        "stop_sample_exclusive": 144262,
+        "input_iq_count": 20023,
+        "predicted_center_offset_hz": -3457796.574,
+        "predicted_bandwidth_hz": 419745.445,
+        "lowpass_cutoff_hz": 251847.267,
+        "resample_up": 458,
+        "resample_down": 2195,
+        "estimated_output_rate_hz": 2086560.364,
+        "bandwidth_to_output_rate_ratio": 0.2012,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "fm",
+        "family": "FM"
+      }
+    },
+    {
+      "prediction_index": 2,
+      "confidence": 0.8778007626533508,
+      "box_xyxy_normalized": [
+        0.4723880887031555,
+        0.3105453550815582,
+        0.559238851070404,
+        0.37118610739707947
+      ],
+      "without_rms": {
+        "fine_top1": "16qam",
+        "fine_top1_confidence": 0.177462,
+        "fine_top5": [
+          {
+            "class": "16qam",
+            "probability": 0.177462
+          },
+          {
+            "class": "128qam_cross",
+            "probability": 0.174208
+          },
+          {
+            "class": "32qam_cross",
+            "probability": 0.156829
+          },
+          {
+            "class": "512qam_cross",
+            "probability": 0.14877
+          },
+          {
+            "class": "32qam",
+            "probability": 0.141535
+          }
+        ],
+        "family_from_fine_top1": "QAM",
+        "family_top1": "QAM",
+        "family_top1_probability_sum": 0.856619,
+        "family_probabilities": {
+          "QAM": 0.856619,
+          "ASK/OOK": 0.056858,
+          "FSK/GFSK": 0.025352,
+          "PSK": 0.023527,
+          "MSK/GMSK": 0.017291,
+          "Other": 0.013565,
+          "AM": 0.004574,
+          "FM": 0.00185,
+          "OFDM": 0.000365
+        }
+      },
+      "with_rms": {
+        "fine_top1": "2fsk",
+        "fine_top1_confidence": 0.974157,
+        "fine_top5": [
+          {
+            "class": "2fsk",
+            "probability": 0.974157
+          },
+          {
+            "class": "4fsk",
+            "probability": 0.014411
+          },
+          {
+            "class": "ook",
+            "probability": 0.005663
+          },
+          {
+            "class": "am-dsb",
+            "probability": 0.004094
+          },
+          {
+            "class": "tone",
+            "probability": 0.001068
+          }
+        ],
+        "family_from_fine_top1": "FSK/GFSK",
+        "family_top1": "FSK/GFSK",
+        "family_top1_probability_sum": 0.98863,
+        "family_probabilities": {
+          "FSK/GFSK": 0.98863,
+          "ASK/OOK": 0.005664,
+          "AM": 0.004174,
+          "Other": 0.001126,
+          "PSK": 0.00021,
+          "OFDM": 0.000163,
+          "MSK/GMSK": 2.4e-05,
+          "QAM": 1e-05,
+          "FM": 0.0
+        }
+      },
+      "pre_normalization_rms": 0.08495784289589314,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.08495784289589314,
+        "start_sample": 123833,
+        "stop_sample_exclusive": 146602,
+        "input_iq_count": 22769,
+        "predicted_center_offset_hz": 1591342.688,
+        "predicted_bandwidth_hz": 606407.523,
+        "lowpass_cutoff_hz": 363844.514,
+        "resample_up": 638,
+        "resample_down": 3477,
+        "estimated_output_rate_hz": 1834915.157,
+        "bandwidth_to_output_rate_ratio": 0.3305,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "2fsk",
+        "family": "FSK/GFSK"
+      }
+    },
+    {
+      "prediction_index": 3,
+      "confidence": 0.8639851212501526,
+      "box_xyxy_normalized": [
+        0.9026157855987549,
+        0.6377882361412048,
+        0.9818480014801025,
+        0.6821897625923157
+      ],
+      "without_rms": {
+        "fine_top1": "fm",
+        "fine_top1_confidence": 0.99855,
+        "fine_top5": [
+          {
+            "class": "fm",
+            "probability": 0.99855
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.000817
+          },
+          {
+            "class": "4gmsk",
+            "probability": 0.000504
+          },
+          {
+            "class": "2gmsk",
+            "probability": 9.3e-05
+          },
+          {
+            "class": "2gfsk",
+            "probability": 1.5e-05
+          }
+        ],
+        "family_from_fine_top1": "FM",
+        "family_top1": "FM",
+        "family_top1_probability_sum": 0.99855,
+        "family_probabilities": {
+          "FM": 0.99855,
+          "FSK/GFSK": 0.000843,
+          "MSK/GMSK": 0.000603,
+          "QAM": 3e-06,
+          "OFDM": 0.0,
+          "PSK": 0.0,
+          "ASK/OOK": 0.0,
+          "Other": 0.0,
+          "AM": 0.0
+        }
+      },
+      "with_rms": {
+        "fine_top1": "fm",
+        "fine_top1_confidence": 0.996109,
+        "fine_top5": [
+          {
+            "class": "fm",
+            "probability": 0.996109
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.002348
+          },
+          {
+            "class": "4gmsk",
+            "probability": 0.001102
+          },
+          {
+            "class": "2gmsk",
+            "probability": 0.000335
+          },
+          {
+            "class": "2gfsk",
+            "probability": 5.4e-05
+          }
+        ],
+        "family_from_fine_top1": "FM",
+        "family_top1": "FM",
+        "family_top1_probability_sum": 0.996109,
+        "family_probabilities": {
+          "FM": 0.996109,
+          "FSK/GFSK": 0.002433,
+          "MSK/GMSK": 0.001449,
+          "QAM": 8e-06,
+          "PSK": 0.0,
+          "OFDM": 0.0,
+          "ASK/OOK": 0.0,
+          "Other": 0.0,
+          "AM": 0.0
+        }
+      },
+      "pre_normalization_rms": 1.5570404949578005,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 1.5570404949578005,
+        "start_sample": 236615,
+        "stop_sample_exclusive": 257386,
+        "input_iq_count": 20771,
+        "predicted_center_offset_hz": -1599889.994,
+        "predicted_bandwidth_hz": 444015.265,
+        "lowpass_cutoff_hz": 266409.159,
+        "resample_up": 775,
+        "resample_down": 3853,
+        "estimated_output_rate_hz": 2011419.673,
+        "bandwidth_to_output_rate_ratio": 0.2207,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "fm",
+        "family": "FM"
+      }
+    }
+  ],
+  "feature_assets": [
+    {
+      "prediction_index": 0,
+      "file": "feature-00.png",
+      "box_xyxy_normalized": [
+        0.7465059757232666,
+        0.4075824022293091,
+        0.8320963382720947,
+        0.4567878246307373
+      ],
+      "yolo_confidence": 0.9082225561141968,
+      "xcit_fine_top1": "am-dsb-sc",
+      "xcit_family_top1": "AM",
+      "ground_truth": {
+        "class": "am-dsb-sc",
+        "family": "AM"
+      }
+    },
+    {
+      "prediction_index": 1,
+      "file": "feature-01.png",
+      "box_xyxy_normalized": [
+        0.47393491864204407,
+        0.8247923851013184,
+        0.5503146648406982,
+        0.8667669296264648
+      ],
+      "yolo_confidence": 0.8860432505607605,
+      "xcit_fine_top1": "fm",
+      "xcit_family_top1": "FM",
+      "ground_truth": {
+        "class": "fm",
+        "family": "FM"
+      }
+    },
+    {
+      "prediction_index": 2,
+      "file": "feature-02.png",
+      "box_xyxy_normalized": [
+        0.4723880887031555,
+        0.3105453550815582,
+        0.559238851070404,
+        0.37118610739707947
+      ],
+      "yolo_confidence": 0.8778007626533508,
+      "xcit_fine_top1": "2fsk",
+      "xcit_family_top1": "FSK/GFSK",
+      "ground_truth": {
+        "class": "2fsk",
+        "family": "FSK/GFSK"
+      }
+    },
+    {
+      "prediction_index": 3,
+      "file": "feature-03.png",
+      "box_xyxy_normalized": [
+        0.9026157855987549,
+        0.6377882361412048,
+        0.9818480014801025,
+        0.6821897625923157
+      ],
+      "yolo_confidence": 0.8639851212501526,
+      "xcit_fine_top1": "fm",
+      "xcit_family_top1": "FM",
+      "ground_truth": {
+        "class": "fm",
+        "family": "FM"
+      }
+    }
+  ],
+  "assets": {
+    "spectrogram": "spectrogram.png",
+    "yolo_overlay": "yolo-overlay.png",
+    "local_features": "local-features.png"
+  },
+  "spectrogram_sha256": "cbe837ab31a4411a6e9a95d7666f8a0e0dcb4c647828e3a4f2f5e31022c9ff5a"
+}

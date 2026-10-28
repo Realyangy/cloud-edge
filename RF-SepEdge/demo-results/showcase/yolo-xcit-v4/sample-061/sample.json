@@ -1,0 +1,802 @@
+{
+  "task": "YOLO11n + XCiT V4",
+  "seed": 161803,
+  "sample_index": 61,
+  "source_predictions": "../../model-selection/v4-final/predictions.json",
+  "classification_recomputed": false,
+  "spectrogram_regenerated_from_same_seed_stream": true,
+  "ground_truth_count_check": 5,
+  "ground_truth_class_names": [
+    "16msk",
+    "32ask",
+    "4msk",
+    "bpsk",
+    "4gmsk"
+  ],
+  "metrics": {
+    "ground_truth_count": 5,
+    "prediction_count": 6,
+    "TP": 5,
+    "FP": 1,
+    "FN": 0,
+    "matched_family_correct": 5,
+    "matched_fine_correct": 4
+  },
+  "predictions": [
+    {
+      "prediction_index": 0,
+      "confidence": 0.9306208491325378,
+      "box_xyxy_normalized": [
+        0.5903612375259399,
+        0.09958872199058533,
+        0.6756235361099243,
+        0.15007463097572327
+      ],
+      "without_rms": {
+        "fine_top1": "4gmsk",
+        "fine_top1_confidence": 0.642978,
+        "fine_top5": [
+          {
+            "class": "4gmsk",
+            "probability": 0.642978
+          },
+          {
+            "class": "4msk",
+            "probability": 0.181653
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.13801
+          },
+          {
+            "class": "2gmsk",
+            "probability": 0.008774
+          },
+          {
+            "class": "8psk",
+            "probability": 0.005275
+          }
+        ],
+        "family_from_fine_top1": "MSK/GMSK",
+        "family_top1": "MSK/GMSK",
+        "family_top1_probability_sum": 0.83367,
+        "family_probabilities": {
+          "MSK/GMSK": 0.83367,
+          "FSK/GFSK": 0.139264,
+          "PSK": 0.022988,
+          "QAM": 0.004036,
+          "Other": 3.1e-05,
+          "FM": 6e-06,
+          "OFDM": 4e-06,
+          "ASK/OOK": 1e-06,
+          "AM": 0.0
+        }
+      },
+      "with_rms": {
+        "fine_top1": "4gmsk",
+        "fine_top1_confidence": 0.746423,
+        "fine_top5": [
+          {
+            "class": "4gmsk",
+            "probability": 0.746423
+          },
+          {
+            "class": "4gfsk",
+            "probability": 0.249584
+          },
+          {
+            "class": "2gmsk",
+            "probability": 0.001908
+          },
+          {
+            "class": "4msk",
+            "probability": 0.00162
+          },
+          {
+            "class": "8gfsk",
+            "probability": 0.000303
+          }
+        ],
+        "family_from_fine_top1": "MSK/GMSK",
+        "family_top1": "MSK/GMSK",
+        "family_top1_probability_sum": 0.749969,
+        "family_probabilities": {
+          "MSK/GMSK": 0.749969,
+          "FSK/GFSK": 0.249941,
+          "QAM": 7.5e-05,
+          "PSK": 1.3e-05,
+          "FM": 2e-06,
+          "Other": 0.0,
+          "OFDM": 0.0,
+          "ASK/OOK": 0.0,
+          "AM": 0.0
+        }
+      },
+      "pre_normalization_rms": 0.4014193827576461,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.4014193827576461,
+        "start_sample": 154759,
+        "stop_sample_exclusive": 177111,
+        "input_iq_count": 22352,
+        "predicted_center_offset_hz": 3751683.235,
+        "predicted_bandwidth_hz": 504859.09,
+        "lowpass_cutoff_hz": 302915.454,
+        "resample_up": 20,
+        "resample_down": 107,
+        "estimated_output_rate_hz": 1869158.879,
+        "bandwidth_to_output_rate_ratio": 0.2701,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "4gmsk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 1,
+      "confidence": 0.9094871878623962,
+      "box_xyxy_normalized": [
+        0.3836774230003357,
+        0.45340633392333984,
+        0.476462185382843,
+        0.9980348348617554
+      ],
+      "without_rms": {
+        "fine_top1": "bpsk",
+        "fine_top1_confidence": 0.162034,
+        "fine_top5": [
+          {
+            "class": "bpsk",
+            "probability": 0.162034
+          },
+          {
+            "class": "ook",
+            "probability": 0.121214
+          },
+          {
+            "class": "4ask",
+            "probability": 0.061623
+          },
+          {
+            "class": "am-dsb",
+            "probability": 0.056499
+          },
+          {
+            "class": "16ask",
+            "probability": 0.044261
+          }
+        ],
+        "family_from_fine_top1": "PSK",
+        "family_top1": "ASK/OOK",
+        "family_top1_probability_sum": 0.336025,
+        "family_probabilities": {
+          "ASK/OOK": 0.336025,
+          "PSK": 0.223327,
+          "OFDM": 0.126428,
+          "AM": 0.117966,
+          "QAM": 0.066319,
+          "Other": 0.061794,
+          "FSK/GFSK": 0.041608,
+          "MSK/GMSK": 0.02448,
+          "FM": 0.002053
+        }
+      },
+      "with_rms": {
+        "fine_top1": "8ask",
+        "fine_top1_confidence": 0.324961,
+        "fine_top5": [
+          {
+            "class": "8ask",
+            "probability": 0.324961
+          },
+          {
+            "class": "64ask",
+            "probability": 0.233283
+          },
+          {
+            "class": "16ask",
+            "probability": 0.218024
+          },
+          {
+            "class": "32ask",
+            "probability": 0.207613
+          },
+          {
+            "class": "4ask",
+            "probability": 0.015958
+          }
+        ],
+        "family_from_fine_top1": "ASK/OOK",
+        "family_top1": "ASK/OOK",
+        "family_top1_probability_sum": 0.999879,
+        "family_probabilities": {
+          "ASK/OOK": 0.999879,
+          "QAM": 9.5e-05,
+          "AM": 1.8e-05,
+          "PSK": 6e-06,
+          "MSK/GMSK": 1e-06,
+          "FSK/GFSK": 0.0,
+          "Other": 0.0,
+          "OFDM": 0.0,
+          "FM": 0.0
+        }
+      },
+      "pre_normalization_rms": 5.3801431195640514,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 5.3801431195640514,
+        "start_sample": 100578,
+        "stop_sample_exclusive": 124902,
+        "input_iq_count": 24324,
+        "predicted_center_offset_hz": -2257205.844,
+        "predicted_bandwidth_hz": 5446285.009,
+        "lowpass_cutoff_hz": 3267771.006,
+        "resample_up": 1,
+        "resample_down": 1,
+        "estimated_output_rate_hz": 10000000.0,
+        "bandwidth_to_output_rate_ratio": 0.5446,
+        "pre_crop_samples": 24324,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "32ask",
+        "family": "ASK/OOK"
+      }
+    },
+    {
+      "prediction_index": 2,
+      "confidence": 0.8785490989685059,
+      "box_xyxy_normalized": [
+        0.16631826758384705,
+        0.3323814272880554,
+        0.27792447805404663,
+        0.3690672516822815
+      ],
+      "without_rms": {
+        "fine_top1": "128qam_cross",
+        "fine_top1_confidence": 0.174912,
+        "fine_top5": [
+          {
+            "class": "128qam_cross",
+            "probability": 0.174912
+          },
+          {
+            "class": "16qam",
+            "probability": 0.163093
+          },
+          {
+            "class": "512qam_cross",
+            "probability": 0.162723
+          },
+          {
+            "class": "32qam",
+            "probability": 0.156112
+          },
+          {
+            "class": "32qam_cross",
+            "probability": 0.134162
+          }
+        ],
+        "family_from_fine_top1": "QAM",
+        "family_top1": "QAM",
+        "family_top1_probability_sum": 0.876195,
+        "family_probabilities": {
+          "QAM": 0.876195,
+          "ASK/OOK": 0.041965,
+          "FSK/GFSK": 0.025944,
+          "MSK/GMSK": 0.021742,
+          "PSK": 0.014759,
+          "Other": 0.012531,
+          "AM": 0.004073,
+          "FM": 0.002321,
+          "OFDM": 0.000471
+        }
+      },
+      "with_rms": {
+        "fine_top1": "4msk",
+        "fine_top1_confidence": 0.737044,
+        "fine_top5": [
+          {
+            "class": "4msk",
+            "probability": 0.737044
+          },
+          {
+            "class": "4fsk",
+            "probability": 0.235697
+          },
+          {
+            "class": "8msk",
+            "probability": 0.019018
+          },
+          {
+            "class": "2fsk",
+            "probability": 0.003375
+          },
+          {
+            "class": "4gmsk",
+            "probability": 0.0032
+          }
+        ],
+        "family_from_fine_top1": "MSK/GMSK",
+        "family_top1": "MSK/GMSK",
+        "family_top1_probability_sum": 0.75953,
+        "family_probabilities": {
+          "MSK/GMSK": 0.75953,
+          "FSK/GFSK": 0.239401,
+          "QAM": 0.00064,
+          "OFDM": 0.000266,
+          "AM": 6.1e-05,
+          "ASK/OOK": 4.4e-05,
+          "PSK": 4.2e-05,
+          "Other": 1.5e-05,
+          "FM": 1e-06
+        }
+      },
+      "pre_normalization_rms": 0.03958472074870619,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.03958472074870619,
+        "start_sample": 43599,
+        "stop_sample_exclusive": 72857,
+        "input_iq_count": 29258,
+        "predicted_center_offset_hz": 1492756.605,
+        "predicted_bandwidth_hz": 366858.244,
+        "lowpass_cutoff_hz": 220114.946,
+        "resample_up": 333,
+        "resample_down": 2332,
+        "estimated_output_rate_hz": 1427958.834,
+        "bandwidth_to_output_rate_ratio": 0.2569,
+        "pre_crop_samples": 4178,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "4msk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 3,
+      "confidence": 0.6907457113265991,
+      "box_xyxy_normalized": [
+        0.6606971025466919,
+        0.5937836170196533,
+        0.7312456369400024,
+        0.6868350505828857
+      ],
+      "without_rms": {
+        "fine_top1": "16msk",
+        "fine_top1_confidence": 0.715621,
+        "fine_top5": [
+          {
+            "class": "16msk",
+            "probability": 0.715621
+          },
+          {
+            "class": "8fsk",
+            "probability": 0.203833
+          },
+          {
+            "class": "16fsk",
+            "probability": 0.069405
+          },
+          {
+            "class": "8msk",
+            "probability": 0.010653
+          },
+          {
+            "class": "4fsk",
+            "probability": 0.000137
+          }
+        ],
+        "family_from_fine_top1": "MSK/GMSK",
+        "family_top1": "MSK/GMSK",
+        "family_top1_probability_sum": 0.726291,
+        "family_probabilities": {
+          "MSK/GMSK": 0.726291,
+          "FSK/GFSK": 0.273401,
+          "Other": 0.000102,
+          "ASK/OOK": 9.8e-05,
+          "AM": 5e-05,
+          "FM": 3.3e-05,
+          "QAM": 2.4e-05,
+          "PSK": 1e-06,
+          "OFDM": 0.0
+        }
+      },
+      "with_rms": {
+        "fine_top1": "16msk",
+        "fine_top1_confidence": 0.537298,
+        "fine_top5": [
+          {
+            "class": "16msk",
+            "probability": 0.537298
+          },
+          {
+            "class": "8fsk",
+            "probability": 0.391681
+          },
+          {
+            "class": "16fsk",
+            "probability": 0.05491
+          },
+          {
+            "class": "8msk",
+            "probability": 0.015496
+          },
+          {
+            "class": "4fsk",
+            "probability": 0.000213
+          }
+        ],
+        "family_from_fine_top1": "MSK/GMSK",
+        "family_top1": "MSK/GMSK",
+        "family_top1_probability_sum": 0.552807,
+        "family_probabilities": {
+          "MSK/GMSK": 0.552807,
+          "FSK/GFSK": 0.446819,
+          "ASK/OOK": 0.000138,
+          "Other": 0.000119,
+          "AM": 5.7e-05,
+          "FM": 3.7e-05,
+          "QAM": 2e-05,
+          "PSK": 1e-06,
+          "OFDM": 1e-06
+        }
+      },
+      "pre_normalization_rms": 0.7430238868386337,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.7430238868386337,
+        "start_sample": 173197,
+        "stop_sample_exclusive": 191692,
+        "input_iq_count": 18495,
+        "predicted_center_offset_hz": -1403093.338,
+        "predicted_bandwidth_hz": 930514.336,
+        "lowpass_cutoff_hz": 558308.601,
+        "resample_up": 845,
+        "resample_down": 3027,
+        "estimated_output_rate_hz": 2791542.782,
+        "bandwidth_to_output_rate_ratio": 0.3333,
+        "pre_crop_samples": 5163,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "16msk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 4,
+      "confidence": 0.6714938879013062,
+      "box_xyxy_normalized": [
+        0.6558293104171753,
+        0.0614757239818573,
+        0.7617627382278442,
+        0.3174838423728943
+      ],
+      "without_rms": {
+        "fine_top1": "16qam",
+        "fine_top1_confidence": 0.177469,
+        "fine_top5": [
+          {
+            "class": "16qam",
+            "probability": 0.177469
+          },
+          {
+            "class": "128qam_cross",
+            "probability": 0.17007
+          },
+          {
+            "class": "32qam_cross",
+            "probability": 0.160921
+          },
+          {
+            "class": "512qam_cross",
+            "probability": 0.142334
+          },
+          {
+            "class": "32qam",
+            "probability": 0.134211
+          }
+        ],
+        "family_from_fine_top1": "QAM",
+        "family_top1": "QAM",
+        "family_top1_probability_sum": 0.839851,
+        "family_probabilities": {
+          "QAM": 0.839851,
+          "ASK/OOK": 0.063685,
+          "FSK/GFSK": 0.029352,
+          "PSK": 0.024763,
+          "MSK/GMSK": 0.018466,
+          "Other": 0.015983,
+          "AM": 0.00563,
+          "FM": 0.001839,
+          "OFDM": 0.00043
+        }
+      },
+      "with_rms": {
+        "fine_top1": "bpsk",
+        "fine_top1_confidence": 0.530912,
+        "fine_top5": [
+          {
+            "class": "bpsk",
+            "probability": 0.530912
+          },
+          {
+            "class": "64psk",
+            "probability": 0.071824
+          },
+          {
+            "class": "qpsk",
+            "probability": 0.052199
+          },
+          {
+            "class": "16psk",
+            "probability": 0.044765
+          },
+          {
+            "class": "8psk",
+            "probability": 0.043923
+          }
+        ],
+        "family_from_fine_top1": "PSK",
+        "family_top1": "PSK",
+        "family_top1_probability_sum": 0.786329,
+        "family_probabilities": {
+          "PSK": 0.786329,
+          "ASK/OOK": 0.181107,
+          "QAM": 0.028812,
+          "OFDM": 0.000995,
+          "FSK/GFSK": 0.000972,
+          "MSK/GMSK": 0.000791,
+          "Other": 0.000785,
+          "AM": 0.00014,
+          "FM": 6.9e-05
+        }
+      },
+      "pre_normalization_rms": 0.08882474088350845,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.08882474088350845,
+        "start_sample": 171921,
+        "stop_sample_exclusive": 199692,
+        "input_iq_count": 27771,
+        "predicted_center_offset_hz": 3105202.168,
+        "predicted_bandwidth_hz": 2560081.184,
+        "lowpass_cutoff_hz": 1536048.71,
+        "resample_up": 3036,
+        "resample_down": 3953,
+        "estimated_output_rate_hz": 7680242.854,
+        "bandwidth_to_output_rate_ratio": 0.3333,
+        "pre_crop_samples": 21329,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      },
+      "ground_truth": {
+        "class": "bpsk",
+        "family": "PSK"
+      }
+    },
+    {
+      "prediction_index": 5,
+      "confidence": 0.33003756403923035,
+      "box_xyxy_normalized": [
+        0.6551095247268677,
+        0.13780087232589722,
+        0.7614046335220337,
+        0.2526228725910187
+      ],
+      "without_rms": {
+        "fine_top1": "16qam",
+        "fine_top1_confidence": 0.175417,
+        "fine_top5": [
+          {
+            "class": "16qam",
+            "probability": 0.175417
+          },
+          {
+            "class": "128qam_cross",
+            "probability": 0.17209
+          },
+          {
+            "class": "32qam_cross",
+            "probability": 0.153384
+          },
+          {
+            "class": "512qam_cross",
+            "probability": 0.149731
+          },
+          {
+            "class": "32qam",
+            "probability": 0.142621
+          }
+        ],
+        "family_from_fine_top1": "QAM",
+        "family_top1": "QAM",
+        "family_top1_probability_sum": 0.855167,
+        "family_probabilities": {
+          "QAM": 0.855167,
+          "ASK/OOK": 0.053842,
+          "FSK/GFSK": 0.028004,
+          "MSK/GMSK": 0.021032,
+          "PSK": 0.020543,
+          "Other": 0.013916,
+          "AM": 0.004901,
+          "FM": 0.002156,
+          "OFDM": 0.00044
+        }
+      },
+      "with_rms": {
+        "fine_top1": "bpsk",
+        "fine_top1_confidence": 0.989952,
+        "fine_top5": [
+          {
+            "class": "bpsk",
+            "probability": 0.989952
+          },
+          {
+            "class": "4ask",
+            "probability": 0.006169
+          },
+          {
+            "class": "ook",
+            "probability": 0.003027
+          },
+          {
+            "class": "8ask",
+            "probability": 0.000135
+          },
+          {
+            "class": "2fsk",
+            "probability": 0.000135
+          }
+        ],
+        "family_from_fine_top1": "PSK",
+        "family_top1": "PSK",
+        "family_top1_probability_sum": 0.990116,
+        "family_probabilities": {
+          "PSK": 0.990116,
+          "ASK/OOK": 0.009626,
+          "FSK/GFSK": 0.000145,
+          "Other": 7.3e-05,
+          "MSK/GMSK": 2.5e-05,
+          "FM": 8e-06,
+          "AM": 3e-06,
+          "OFDM": 2e-06,
+          "QAM": 2e-06
+        }
+      },
+      "pre_normalization_rms": 0.07121315074790042,
+      "extraction": {
+        "normalization": "complex_rms",
+        "rms_before_normalization": 0.07121315074790042,
+        "start_sample": 171733,
+        "stop_sample_exclusive": 199598,
+        "input_iq_count": 27865,
+        "predicted_center_offset_hz": 3047881.275,
+        "predicted_bandwidth_hz": 1148220.003,
+        "lowpass_cutoff_hz": 688932.002,
+        "resample_up": 887,
+        "resample_down": 2575,
+        "estimated_output_rate_hz": 3444660.194,
+        "bandwidth_to_output_rate_ratio": 0.3333,
+        "pre_crop_samples": 9599,
+        "zero_padding_samples": 0,
+        "caveat": "Classification input may differ from official clean narrowband training distribution"
+      }
+    }
+  ],
+  "feature_assets": [
+    {
+      "prediction_index": 0,
+      "file": "feature-00.png",
+      "box_xyxy_normalized": [
+        0.5903612375259399,
+        0.09958872199058533,
+        0.6756235361099243,
+        0.15007463097572327
+      ],
+      "yolo_confidence": 0.9306208491325378,
+      "xcit_fine_top1": "4gmsk",
+      "xcit_family_top1": "MSK/GMSK",
+      "ground_truth": {
+        "class": "4gmsk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 1,
+      "file": "feature-01.png",
+      "box_xyxy_normalized": [
+        0.3836774230003357,
+        0.45340633392333984,
+        0.476462185382843,
+        0.9980348348617554
+      ],
+      "yolo_confidence": 0.9094871878623962,
+      "xcit_fine_top1": "8ask",
+      "xcit_family_top1": "ASK/OOK",
+      "ground_truth": {
+        "class": "32ask",
+        "family": "ASK/OOK"
+      }
+    },
+    {
+      "prediction_index": 2,
+      "file": "feature-02.png",
+      "box_xyxy_normalized": [
+        0.16631826758384705,
+        0.3323814272880554,
+        0.27792447805404663,
+        0.3690672516822815
+      ],
+      "yolo_confidence": 0.8785490989685059,
+      "xcit_fine_top1": "4msk",
+      "xcit_family_top1": "MSK/GMSK",
+      "ground_truth": {
+        "class": "4msk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 3,
+      "file": "feature-03.png",
+      "box_xyxy_normalized": [
+        0.6606971025466919,
+        0.5937836170196533,
+        0.7312456369400024,
+        0.6868350505828857
+      ],
+      "yolo_confidence": 0.6907457113265991,
+      "xcit_fine_top1": "16msk",
+      "xcit_family_top1": "MSK/GMSK",
+      "ground_truth": {
+        "class": "16msk",
+        "family": "MSK/GMSK"
+      }
+    },
+    {
+      "prediction_index": 4,
+      "file": "feature-04.png",
+      "box_xyxy_normalized": [
+        0.6558293104171753,
+        0.0614757239818573,
+        0.7617627382278442,
+        0.3174838423728943
+      ],
+      "yolo_confidence": 0.6714938879013062,
+      "xcit_fine_top1": "bpsk",
+      "xcit_family_top1": "PSK",
+      "ground_truth": {
+        "class": "bpsk",
+        "family": "PSK"
+      }
+    },
+    {
+      "prediction_index": 5,
+      "file": "feature-05.png",
+      "box_xyxy_normalized": [
+        0.6551095247268677,
+        0.13780087232589722,
+        0.7614046335220337,
+        0.2526228725910187
+      ],
+      "yolo_confidence": 0.33003756403923035,
+      "xcit_fine_top1": "bpsk",
+      "xcit_family_top1": "PSK",
+      "ground_truth": null
+    }
+  ],
+  "assets": {
+    "spectrogram": "spectrogram.png",
+    "yolo_overlay": "yolo-overlay.png",
+    "local_features": "local-features.png"
+  },
+  "spectrogram_sha256": "5b40cc8f1b64765f4c9cd2d56bafc7ea85ab5992002c0be2e588aa0f56f076ed"
+}
