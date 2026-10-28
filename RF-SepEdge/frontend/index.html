@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f8ff" />
+  <title>射频信号智能分析与恢复演示系统</title>
+  <style>
+/* Typography contract: one system-sans stack; 14 / 16 / 20 / 24 / 28 px only.
+   Weights: 400 / 500 / 600. No downloaded fonts or external dependencies. */
+:root{--brand:#2f61ed;--brand-soft:#edf3ff;--brand-dark:#183c9c;--ink:#142541;--muted:#667b9a;--light:#8c9cb3;--line:#e2e9f4;--page:#f5f8fe;--card:#fff;--inner:#f7f9fd;--teal:#0f9d92;--orange:#e88830;--shadow:0 10px 30px rgba(31,65,123,.045);--font:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Segoe UI",sans-serif}
+*{box-sizing:border-box}[hidden]{display:none!important}html{font-family:var(--font);font-size:16px;background:var(--page);color:var(--ink);scroll-behavior:smooth}body{margin:0;min-width:320px}button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:3px solid #9db8ff;outline-offset:3px}img{max-width:100%}h1,h2,h3,h4,p{margin:0}h1{font-size:28px;font-weight:600;line-height:1.4}h2{font-size:24px;font-weight:600;line-height:1.4}h3{font-size:20px;font-weight:600;line-height:1.4}h4{font-size:20px;font-weight:600;line-height:1.35}p{line-height:1.65}small{font-size:14px}strong{font-weight:600}.app-shell{max-width:1600px;margin:auto;padding:28px 34px 24px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-bottom:23px}.brand{display:flex;align-items:center;gap:16px}.brand-symbol{width:52px;height:52px;border-radius:15px;color:white;background:var(--brand);display:grid;place-items:center;box-shadow:0 9px 20px #2f61ed24;flex-shrink:0}.brand-sub{font-size:16px;color:var(--muted);margin-top:1px}.status-line{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:99px;background:var(--brand-soft);color:var(--brand-dark);font-size:14px;white-space:nowrap;font-weight:500}.status-dot{width:9px;height:9px;border-radius:50%;background:#8b9bb4}.status-line.ready .status-dot{background:#22b89e}.status-line.error .status-dot{background:#d36c45}.primary-tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin-bottom:22px}.task-tab{border:0;background:none;color:var(--muted);padding:14px 6px 16px;font-size:20px;font-weight:600;border-bottom:3px solid transparent;min-width:280px;text-align:left}.task-tab.active{color:var(--brand);border-color:var(--brand)}.tab-no{margin-right:9px;font-size:16px}.task-view[hidden],.lightbox[hidden],.feature-view[hidden],.error-banner[hidden]{display:none!important}.error-banner{padding:18px 20px;border:1px solid #f4c3b8;color:#9b371e;background:#fff5f2;border-radius:14px;margin-bottom:18px;font-size:16px;white-space:pre-line}.intro-panel,.controls-panel,.panel{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:18px}.intro-panel{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:22px 28px;margin-bottom:16px}.intro-copy{max-width:815px}.intro-copy p{font-size:16px;color:var(--muted);margin-top:8px;line-height:1.8}.eyebrow{text-transform:uppercase;letter-spacing:.05em;color:var(--brand);font-size:14px;font-weight:600;margin-bottom:6px}.intro-metrics{display:flex;gap:0;flex-shrink:0}.intro-metrics>div{border-left:1px solid var(--line);min-width:128px;padding:0 18px;display:flex;flex-direction:column;gap:6px;text-align:center}.intro-metrics strong{font-size:24px;color:var(--brand);font-weight:600;white-space:nowrap}.intro-metrics span{font-size:14px;color:var(--muted)}.controls-panel{display:flex;align-items:flex-end;gap:18px;padding:16px 22px;margin-bottom:26px;flex-wrap:wrap}.control-group{display:flex;flex:1 1 185px;flex-direction:column;gap:9px;min-width:145px;max-width:325px}.control-group.wide{max-width:410px;flex-grow:2}.control-group label,.control-summary>span{color:var(--muted);font-size:14px;font-weight:500}select{border:1px solid var(--line);border-radius:11px;background:#fcfdff;color:var(--ink);padding:11px 15px;min-height:48px;width:100%;font-size:16px;font-weight:500;cursor:pointer}.control-summary{min-height:48px;flex:1 0 155px;display:flex;flex-direction:column;justify-content:center;gap:5px}.control-summary strong{font-size:16px;color:var(--ink);font-weight:600}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 14px;padding:0 2px}.section-heading p{font-size:16px;color:var(--muted);margin-top:3px}.heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.auto-button{border:1px solid #bdd0fd;background:#eef4ff;color:var(--brand);font-size:14px;font-weight:600;padding:10px 14px;border-radius:10px}.auto-button.playing{background:var(--brand);color:white;border-color:var(--brand)}.outline-tag{border-radius:99px;padding:10px 15px;color:#4272a7;font-size:14px;font-weight:500;border:1px solid #deebff;background:#f7faff;white-space:nowrap}.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.step{display:flex;align-items:center;gap:14px;text-align:left;border:1px solid var(--line);border-radius:13px;background:#fff;padding:13px 15px;color:var(--muted);font-size:16px;font-weight:500;min-height:60px;transition:background .15s,border-color .15s,transform .15s}.step:hover{border-color:#adcbff;transform:translateY(-1px)}.step.active{background:var(--brand-soft);color:var(--brand-dark);border-color:#b4caff}.step.visited .step-index{background:#e5f2ee;color:#16896c}.step-index{display:grid;place-items:center;width:38px;height:36px;border-radius:10px;background:#f0f4fa;color:var(--brand);font-size:16px;font-weight:600;flex-shrink:0}.step.active .step-index{background:var(--brand);color:#fff}.step-name{line-height:1.3}.workspace-grid{display:grid;grid-template-columns:minmax(0,1.58fr) minmax(375px,1fr);gap:16px}.panel{padding:22px}.panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}.panel-heading p{color:var(--muted);font-size:14px;margin-top:5px}.icon-button{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:var(--inner);color:var(--brand)}.icon-button svg{width:21px;height:21px}.display-switch{display:flex;align-items:center;gap:5px;padding:5px;border-radius:12px;background:#f0f4fa;width:max-content;max-width:100%;margin-bottom:12px}.display-switch button{background:none;color:var(--muted);padding:9px 15px;border:0;border-radius:9px;font-size:14px;font-weight:500;white-space:nowrap}.display-switch button.active{background:white;color:var(--brand);box-shadow:0 2px 5px #18376014}.display-switch.compact{margin:0}.display-switch.compact button{padding:8px 12px}.mit-image-frame{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:420px;position:relative}.mit-image-frame img{width:100%;height:auto;max-height:505px;object-fit:contain;display:block}.image-placeholder{position:absolute;inset:0;display:grid;place-items:center;background:#f7f9fc;color:var(--muted);font-size:16px}.playback-caption{min-height:56px;display:flex;align-items:center;gap:13px;line-height:1.55;color:var(--muted);font-size:16px;padding-top:13px}.blue-tag,.small-ghost{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:8px 11px;font-size:14px;color:var(--brand);font-weight:600;white-space:nowrap}.small-ghost{background:#eff6ff}.result-panel{display:flex;flex-direction:column;min-width:0}.ber-comparison{display:flex;align-items:center;gap:8px;padding:17px 0 13px}.ber-card{flex:1;min-width:0;background:var(--inner);border:1px solid var(--line);border-radius:13px;padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px}.ber-card span{color:var(--muted);font-size:14px}.ber-card strong{font-size:24px;letter-spacing:-.025em;font-weight:600}.ber-card.highlight{background:#edf8f6;border-color:#cce9e2}.ber-card.highlight strong{color:#078a75}.ber-arrow{color:#8ba1bd;font-size:24px}.recovery-progress{background:#f8fafe;border:1px solid var(--line);padding:16px;border-radius:12px;margin-bottom:14px}.recovery-top{display:flex;align-items:center;justify-content:space-between;font-size:16px;margin-bottom:12px}.recovery-top span{color:var(--muted)}.recovery-top strong{color:var(--teal);font-size:20px}.bar-track{height:10px;border-radius:99px;background:#e3eaf4;overflow:hidden}.bar-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#58b8b2,#0b9a88);transition:width .35s}.result-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}.result-mini-grid>div{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:#fbfcff;border-radius:12px;padding:12px;min-height:80px}.result-mini-grid span{font-size:14px;color:var(--muted)}.result-mini-grid strong{font-size:20px;word-break:break-word}.stage-explainer{background:var(--brand-soft);border:1px solid #dfebff;border-radius:12px;padding:14px 16px;margin-top:auto}.stage-explainer>span{display:block;font-size:14px;color:var(--brand);font-weight:600;margin-bottom:7px}.stage-explainer p{font-size:16px;line-height:1.6;color:#314b70}.step-actions{display:flex;gap:10px;margin-top:14px}.button{border:0;border-radius:11px;padding:12px 16px;min-height:45px;font-size:16px;font-weight:600;flex:1}.button-quiet{background:#eff4fc;color:#48618a}.button-primary{background:var(--brand);color:#fff}.button:disabled{opacity:.46;cursor:not-allowed}.analysis-section{margin-top:28px}.analysis-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,1fr);gap:16px}.chart-panel{min-width:0}.chart-slot{min-height:285px;display:flex;align-items:stretch}.chart-slot svg{width:100%;height:300px;overflow:visible}.legend{display:flex;gap:20px;justify-content:center;margin-top:8px;color:var(--muted);font-size:14px}.legend>span{display:flex;align-items:center;gap:8px}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%}.legend-dot.light{background:#91bbff}.legend-dot.deep{background:#2f61ed}.comparison-bars{display:flex;flex-direction:column;gap:20px;margin:25px 0 17px}.comparison-row{display:grid;grid-template-columns:minmax(110px,1fr) 2fr 74px;align-items:center;gap:12px;font-size:16px}.comparison-row .bar-track{height:13px}.comparison-row .bar-fill{background:linear-gradient(90deg,#75a4f9,#2f61ed)}.comparison-row strong{text-align:right;font-size:16px;font-weight:600}.page-footer{display:flex;justify-content:space-between;gap:20px;color:var(--light);font-size:14px;margin-top:30px}.frequency-plot-shell{display:grid;grid-template-columns:48px minmax(0,1fr);grid-template-rows:auto auto auto;max-width:660px;margin:0 auto}.frequency-axis{position:relative;grid-row:1;grid-column:1;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding:0 9px 0 0;color:var(--muted);font-size:14px}.frequency-axis-label{position:absolute;left:-37px;top:50%;white-space:nowrap;transform:translateY(-50%) rotate(-90deg);font-size:14px;color:var(--ink);font-weight:500}.frequency-plot{grid-row:1;grid-column:2;position:relative;aspect-ratio:1;background:#29303d;border:1px solid #b9c6d9;overflow:hidden;border-radius:5px}.frequency-plot img{width:100%;height:100%;display:block;object-fit:fill}.detect-layer{position:absolute;inset:0;pointer-events:none}.detect-box{position:absolute;pointer-events:auto;border:2px solid #ffae54;background:#ffc77d16;box-shadow:0 0 0 1px #1f2a3b20;min-width:4px;min-height:4px;padding:0;color:white;transition:background .1s,border-color .1s}.detect-box.active{border:3px solid #30d7c7;background:#30d7c71f;z-index:2}.detect-box:hover{background:#ff9c454a}.detect-box-label{position:absolute;left:-2px;bottom:calc(100% + 2px);border-radius:4px 4px 0 0;background:#df8b33;color:#fff;white-space:nowrap;font-size:14px;padding:3px 5px;font-weight:600}.detect-box.active .detect-box-label{background:#168f88}.time-axis{display:flex;justify-content:space-between;grid-row:2;grid-column:2;color:var(--muted);font-size:14px;padding-top:8px}.time-axis-label{grid-row:3;grid-column:2;text-align:center;font-size:14px;color:var(--ink);padding-top:6px}.feature-view{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;min-height:490px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:15px;gap:10px}.feature-view img{max-height:440px;max-width:100%;object-fit:contain}.feature-view p{color:var(--muted);font-size:14px}.spectrum-result .panel-heading{margin-bottom:12px}.target-chooser{margin:0 0 12px}.target-chooser>span{color:var(--muted);font-size:14px;display:block;margin-bottom:9px}.target-chips{display:flex;gap:7px;flex-wrap:wrap}.target-chips button{border:1px solid var(--line);border-radius:8px;background:#f8fafd;color:var(--muted);font-size:14px;padding:7px 12px;font-weight:600}.target-chips button.active{color:var(--brand);border-color:#afc8ff;background:var(--brand-soft)}.signal-key-result{display:grid;grid-template-columns:1fr;gap:5px;padding:17px;background:#f5f8fe;border:1px solid var(--line);border-radius:12px;margin-bottom:13px}.signal-key-result span{font-size:14px;color:var(--muted)}.signal-key-result strong{font-size:24px;color:var(--brand);margin-bottom:6px;overflow-wrap:anywhere}.signal-key-result strong:last-child{font-size:20px;color:var(--ink);margin:0}.spectrum-result .result-mini-grid{gap:8px;margin-bottom:12px}.spectrum-result .result-mini-grid>div{padding:11px;min-height:72px}.spectrum-result .result-mini-grid strong{font-size:16px}.target-gt{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0;font-size:14px;margin-bottom:10px}.target-gt span{color:var(--muted)}.target-gt strong{font-size:16px}.top5-wrap{margin:0 0 13px}.top5-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:16px}.top5-header>span{color:var(--muted);font-size:14px}.top5-row{display:grid;grid-template-columns:minmax(95px,1fr) 1.5fr 62px;gap:8px;align-items:center;margin:10px 0;font-size:14px}.top5-row strong{text-align:right;font-size:14px}.top5-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top5-row .bar-track{height:9px}.top5-row .bar-fill{background:#5687fa}.spectrum-result .stage-explainer{margin-top:0}.detections-panel{margin-top:16px}.table-scroller{max-width:100%;overflow:auto}.result-table{width:100%;border-collapse:collapse;min-width:815px;text-align:left;font-size:16px}.result-table th,.result-table td{padding:14px 12px;border-bottom:1px solid var(--line);white-space:nowrap}.result-table th{background:#f7f9fd;color:#607594;font-weight:500;font-size:14px}.result-table tbody tr{cursor:pointer}.result-table tbody tr:hover{background:#f5f8fe}.result-table tbody tr.selected{background:#edf3ff}.result-table td .dim{color:var(--muted)}.result-table td .correct{color:#078a75;font-weight:600}.result-table td .wrong{color:#b65b3b;font-weight:600}.result-table td strong{color:var(--brand);font-weight:600}.spectrum-metric-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}.spectrum-metric-strip>div{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}.spectrum-metric-strip span{font-size:14px;color:var(--muted)}.spectrum-metric-strip strong{font-size:24px;color:var(--brand)}.spectrum-metric-strip small{font-size:14px;color:var(--light)}.spectrum-insights-slot{min-height:300px}.model-bars{display:flex;flex-direction:column;gap:22px;padding:24px 3px}.model-bar-row{display:grid;grid-template-columns:140px minmax(0,1fr) 80px;align-items:center;gap:12px}.model-bar-row>span{font-size:16px;font-weight:500}.model-bar-row>strong{font-size:16px;text-align:right}.model-bar-pair{display:flex;flex-direction:column;gap:6px}.model-bar-pair>div{height:13px;background:#edf1f8;border-radius:30px;overflow:hidden}.model-bar-pair>div>span{display:block;height:100%;border-radius:30px;background:#a8c4ff}.model-bar-pair>div:nth-child(2)>span{background:var(--brand)}.model-legend{display:flex;gap:16px;justify-content:center;padding:5px 0 12px;color:var(--muted);font-size:14px}.model-legend>span{display:flex;gap:8px;align-items:center}.key-dot{width:11px;height:11px;border-radius:3px;background:#a8c4ff}.key-dot.v4{background:var(--brand)}.family-performance{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:6px}.family-performance>div{border:1px solid var(--line);border-radius:12px;padding:15px 14px}.family-performance strong{font-size:20px;color:var(--brand);display:block;margin-top:8px}.family-performance span{font-size:16px;font-weight:500}.family-performance small{display:block;margin-top:7px;color:var(--muted)}.training-chart{height:325px}.training-chart svg{width:100%;height:305px}.lightbox{position:fixed;inset:0;background:#0c1528ef;z-index:100;display:flex;align-items:center;justify-content:center;padding:65px 30px 30px}.lightbox img{max-width:min(96vw,1600px);max-height:88vh;object-fit:contain;background:white;border-radius:8px}.lightbox-close{position:absolute;right:32px;top:22px;border:1px solid #ffffff70;border-radius:9px;color:white;background:transparent;padding:9px 16px;font-size:16px}.empty-state{display:grid;place-items:center;min-height:250px;color:var(--muted);font-size:16px;white-space:pre-wrap;text-align:center;padding:30px}
+@media(max-width:1170px){.app-shell{padding:22px}.intro-panel{align-items:flex-start;flex-direction:column;gap:18px}.intro-metrics{width:100%}.intro-metrics>div{flex:1}.workspace-grid{grid-template-columns:minmax(0,1.3fr) minmax(340px,1fr)}.panel{padding:18px}.step{padding:12px 9px;gap:8px}.step-name{font-size:14px}.analysis-grid{grid-template-columns:1fr}.comparison-bars{margin:15px 0}}
+@media(max-width:850px){h1{font-size:24px}.app-shell{padding:14px}.topbar{align-items:flex-start;flex-direction:column}.brand-symbol{height:44px;width:44px}.primary-tabs{gap:5px}.task-tab{min-width:0;flex:1;font-size:16px;padding:12px 4px}.intro-panel{padding:20px}.intro-metrics{overflow:auto}.intro-metrics>div{min-width:110px;padding:0 12px}.workspace-grid,.analysis-grid{grid-template-columns:minmax(0,1fr)}.stepper{gap:7px}.step{flex-direction:column;align-items:center;text-align:center;justify-content:center;min-height:80px}.step-name{font-size:14px}.panel-heading h4{font-size:16px}.section-heading{align-items:flex-start;flex-direction:column}.outline-tag{white-space:normal}.spectrum-metric-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.mit-image-frame{min-height:280px}.page-footer{flex-direction:column}.frequency-plot-shell{max-width:590px}}
+@media(max-width:500px){.brand{gap:8px}.brand-symbol{display:none}.intro-panel{padding:16px}.intro-metrics{display:grid;grid-template-columns:repeat(3,1fr)}.intro-metrics>div{min-width:0;padding:0 7px}.intro-metrics strong{font-size:20px}.controls-panel{gap:12px;padding:14px}.control-group{max-width:none}.step-index{width:31px;height:31px}.step-name{font-size:14px}.stepper{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:14px}.ber-card{padding:12px 8px}.ber-card strong{font-size:20px}.frequency-axis{padding-right:4px}.frequency-plot-shell{grid-template-columns:43px minmax(0,1fr)}.frequency-axis-label{left:-34px}.family-performance{grid-template-columns:repeat(2,minmax(0,1fr))}.spectrum-metric-strip{gap:8px}.spectrum-metric-strip>div{padding:12px}.model-bar-row{grid-template-columns:105px minmax(0,1fr) 60px}.display-switch button{padding:8px 9px}.panel-heading{flex-wrap:wrap}}
+
+/* MIT terms: collapsed by default to keep the main dashboard uncluttered. */
+.term-help { margin: 0 0 20px; background: var(--surface, #fff); border: 1px solid var(--line, #dce5f0); border-radius: 12px; padding: 12px 18px; font-size: 16px; }
+.term-help summary { cursor: pointer; font-weight: 500; color: var(--text, #263550); list-style-position: inside; }
+.term-help-body { margin: 12px 0 0; display: grid; gap: 10px; line-height: 1.65; }
+.term-help-body p { margin: 0; font-size: 16px; }
+.term-help-body strong { font-weight: 600; }
+
+</style>
+  
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="31" height="31" fill="none"><path d="M4 20h7l4-9 8 18 5-12 3 3h5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div><h1>射频信号智能分析与恢复演示系统</h1><p class="brand-sub">信号分离与恢复 · 频谱检测与调制识别</p></div>
+      </div>
+      <div class="status-line"><span class="status-dot" aria-hidden="true"></span><span id="data-status">正在连接实验数据</span></div>
+    </header>
+
+    <nav class="primary-tabs" aria-label="任务切换">
+      <button type="button" id="tab-mit" class="task-tab active" aria-selected="true" role="tab" aria-controls="view-mit"><span class="tab-no">01</span> 混合信号分离与恢复</button>
+      <button type="button" id="tab-spectrum" class="task-tab" aria-selected="false" role="tab" aria-controls="view-spectrum"><span class="tab-no">02</span> 频谱检测与调制识别</button>
+    </nav>
+
+    <div id="error-banner" class="error-banner" role="alert" hidden></div>
+
+    <main>
+      <section id="view-mit" class="task-view" role="tabpanel" aria-labelledby="tab-mit">
+        <div class="intro-panel">
+          <div class="intro-copy">
+            <div class="eyebrow">任务一 · MIT WaveNet</div>
+            <h2>从混合信号中恢复目标通信信号</h2>
+            <p>在目标信号受到其他通信信号或电磁干扰时，WaveNet 从混合 IQ 中估计目标波形，再通过解调和误码率对恢复质量进行评价。</p>
+          </div>
+          <div class="intro-metrics"><div><strong>2</strong><span>目标信号类型</span></div><div><strong>4</strong><span>干扰类型</span></div><div><strong>560</strong><span>批量评估记录</span></div></div>
+        </div>
+
+        <section class="controls-panel" aria-label="MIT 样本选择">
+          <div class="control-group"><label for="mit-soi">目标信号</label><select id="mit-soi"><option value="QPSK">QPSK</option><option value="OFDMQPSK">OFDM-QPSK</option></select></div>
+          <div class="control-group"><label for="mit-interference">干扰类型</label><select id="mit-interference"><option value="CommSignal2">CommSignal2</option><option value="CommSignal3">CommSignal3</option><option value="CommSignal5G1">CommSignal5G1</option><option value="EMISignal1">EMISignal1</option></select></div>
+          <div class="control-group"><label for="mit-sinr">标称 SINR</label><select id="mit-sinr"><option value="-18">-18 dB</option><option value="-9" selected>-9 dB</option><option value="0">0 dB</option></select></div>
+          <div class="control-summary"><span>当前样本</span><strong id="mit-sample-id">—</strong></div>
+        </section>
+
+        <details class="term-help">
+          <summary>术语说明：干扰来源、标称 SINR、IQ 波形与时频图</summary>
+          <div class="term-help-body">
+            <p><strong>干扰类型：</strong>CommSignal2 和 CommSignal3 来自两种商用无线设备的通信信号采集；CommSignal5G1 是在实验室生成并采集的 5G 兼容波形；EMISignal1 是人造设备的无意电磁辐射。它们是数据集名称，不代表调制阶数。</p>
+            <p><strong>标称 SINR：</strong>生成混合信号时设定的目标信号与干扰加噪声功率比。-18 dB 表示干扰更强，0 dB 表示两者功率接近；实测值可与标称值略有不同。</p>
+            <p><strong>怎么看图：</strong>IQ 波形的 I/Q 是复数信号的实部和虚部，主要比较“恢复”与“目标真值”是否接近。时频图横轴为时间、纵轴为频率，颜色体现频谱能量；最终恢复效果仍以 BER 和 MSE 评价。</p>
+          </div>
+        </details>
+        <section class="playback-section" aria-label="MIT 推理过程回放">
+          <div class="section-heading"><div><h3>样本推理过程</h3><p>逐步查看真实实验中的输入、恢复与评估</p></div><div class="heading-actions"><button type="button" class="auto-button" id="mit-auto">▶ 自动回放</button><span class="outline-tag">真实结果回放 · 非实时推理</span></div></div>
+          <div class="stepper" id="mit-steps">
+            <button type="button" class="step active" data-step="0"><span class="step-index">01</span><span class="step-name">混合信号输入</span></button>
+            <button type="button" class="step" data-step="1"><span class="step-index">02</span><span class="step-name">WaveNet 分离</span></button>
+            <button type="button" class="step" data-step="2"><span class="step-index">03</span><span class="step-name">波形恢复</span></button>
+            <button type="button" class="step" data-step="3"><span class="step-index">04</span><span class="step-name">恢复效果评估</span></button>
+          </div>
+          <div class="workspace-grid mit-workspace">
+            <article class="panel visual-panel">
+              <div class="panel-heading"><div><h4 id="mit-visual-title">信号波形对比</h4><p id="mit-visual-subtitle">混合输入 · 目标真值 · WaveNet 恢复</p></div><button class="icon-button" id="mit-zoom" type="button" aria-label="放大查看图像" title="放大查看"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+              <div class="display-switch" id="mit-view-switch"><button type="button" data-view="waveforms" class="active">I/Q 波形</button><button type="button" data-view="spectrograms">时频图</button></div>
+              <div class="mit-image-frame"><img id="mit-main-image" src="" alt="真实 MIT WaveNet 信号波形对比" /><div class="image-placeholder" id="mit-image-placeholder">正在加载实验图像…</div></div>
+              <div class="playback-caption"><span id="mit-stage-label" class="blue-tag">01 · 混合输入</span><span id="mit-stage-text">查看带有干扰的混合 IQ 波形，与目标真值进行对照。</span></div>
+            </article>
+            <aside class="panel result-panel" id="mit-result-panel">
+              <div class="panel-heading"><div><h4>本条样本的恢复结果</h4><p>输入与 WaveNet 输出的实际对比</p></div><span class="small-ghost">WaveNet</span></div>
+              <div class="ber-comparison"><div class="ber-card"><span>输入误码率 BER</span><strong id="mit-ber-input">—</strong></div><div class="ber-arrow" aria-hidden="true">→</div><div class="ber-card highlight"><span>恢复后 BER</span><strong id="mit-ber-out">—</strong></div></div>
+              <div class="recovery-progress"><div class="recovery-top"><span>误码率相对下降</span><strong id="mit-ber-drop">—</strong></div><div class="bar-track"><div class="bar-fill" id="mit-drop-bar" style="width:0%"></div></div></div>
+              <div class="result-mini-grid"><div><span>实际 SINR</span><strong id="mit-actual-sinr">—</strong></div><div><span>恢复波形 MSE</span><strong id="mit-mse">—</strong></div><div><span>错误比特数</span><strong id="mit-bit-errors">—</strong></div><div><span>样本长度</span><strong>40,960 点</strong></div></div>
+              <div class="stage-explainer"><span id="mit-explainer-title">阶段说明</span><p id="mit-explainer-body">将目标通信信号与真实干扰帧组合，得到模型需要处理的混合复数 IQ。</p></div>
+              <div class="step-actions"><button class="button button-quiet" id="mit-prev" type="button">上一步</button><button class="button button-primary" id="mit-next" type="button">下一步</button></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="analysis-section" aria-label="MIT 批量实验结果">
+          <div class="section-heading"><div><h3>批量实验表现</h3><p>基于 Seed 42 的 560 条测试记录；曲线与当前选择的目标、干扰同步</p></div><span class="outline-tag">批量结果 · 区别于上方单样本</span></div>
+          <div class="analysis-grid">
+            <article class="panel chart-panel"><div class="panel-heading"><div><h4 id="mit-chart-title">BER 随 SINR 变化</h4><p>输入信号与 WaveNet 恢复结果</p></div><div class="display-switch compact" id="mit-chart-switch"><button type="button" class="active" data-chart="ber">BER</button><button type="button" data-chart="mse">MSE</button></div></div><div id="mit-line-chart" class="chart-slot" aria-label="MIT 性能曲线"></div><div class="legend"><span><i class="legend-dot light"></i>混合输入</span><span><i class="legend-dot deep"></i>WaveNet 恢复</span></div></article>
+            <article class="panel chart-panel"><div class="panel-heading"><div><h4>不同干扰下的平均恢复 BER</h4><p id="mit-compare-desc">QPSK · 4 类干扰 · 每类 70 条</p></div></div><div id="mit-interference-bars" class="comparison-bars"></div></article>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-spectrum" class="task-view" role="tabpanel" aria-labelledby="tab-spectrum" hidden>
+        <div class="intro-panel">
+          <div class="intro-copy"><div class="eyebrow">任务二 · YOLO11n + XCiT V4</div><h2>从宽带频谱中定位并识别多个信号</h2><p>YOLO11n 先在时频图中定位信号，再从宽带 IQ 中提取目标片段，由微调后的 XCiT V4 判断调制家族与具体类型。</p></div>
+          <div class="intro-metrics"><div><strong>94.94%</strong><span>YOLO mAP@0.5</span></div><div><strong>82.94%</strong><span>V4 家族准确率</span></div><div><strong>38.06%</strong><span>57 类 Top-1</span></div></div>
+        </div>
+        <section class="controls-panel" aria-label="频谱样本选择"><div class="control-group wide"><label for="spectrum-sample">宽带测试样本</label><select id="spectrum-sample"><option value="8">Sample 008</option><option value="54">Sample 054</option><option value="60" selected>Sample 060</option><option value="61">Sample 061</option></select></div><div class="control-summary"><span>数据来源</span><strong>Seed 161803 · TorchSig 2.1.1</strong></div><div class="control-summary"><span>当前图中的目标</span><strong id="spectrum-sample-count">—</strong></div></section>
+        <section class="playback-section" aria-label="频谱检测与识别过程回放">
+          <div class="section-heading"><div><h3>样本推理过程</h3><p>点击检测框，可以查看该目标的特征与 XCiT 预测结果</p></div><div class="heading-actions"><button type="button" class="auto-button" id="spectrum-auto">▶ 自动回放</button><span class="outline-tag">真实结果回放 · 非实时推理</span></div></div>
+          <div class="stepper" id="spectrum-steps"><button type="button" class="step active" data-step="0"><span class="step-index">01</span><span class="step-name">宽带时频图</span></button><button type="button" class="step" data-step="1"><span class="step-index">02</span><span class="step-name">YOLO 检测定位</span></button><button type="button" class="step" data-step="2"><span class="step-index">03</span><span class="step-name">目标 IQ 提取</span></button><button type="button" class="step" data-step="3"><span class="step-index">04</span><span class="step-name">XCiT 调制识别</span></button></div>
+          <div class="workspace-grid spectrum-workspace">
+            <article class="panel visual-panel"><div class="panel-heading"><div><h4 id="spectrum-visual-title">宽带时频图</h4><p id="spectrum-visual-subtitle">横轴：时间 · 纵轴：频率</p></div><button class="icon-button" type="button" id="spectrum-zoom" title="放大查看" aria-label="放大查看"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+              <div id="spectrum-image-mode" class="display-switch"><button type="button" data-mode="raw" class="active">原始时频图</button><button type="button" data-mode="boxes">检测结果</button><button type="button" data-mode="features">局部特征</button></div>
+              <div class="frequency-plot-shell" id="freq-plot-shell"><div class="frequency-axis"><span>+5</span><span>+2.5</span><span>0</span><span>-2.5</span><span>-5</span><div class="frequency-axis-label">频率 (MHz)</div></div><div class="frequency-plot"><img id="spectrum-image" src="" alt="宽带信号时频图"/><div id="spectrum-boxes" class="detect-layer"></div><div id="spectrum-image-placeholder" class="image-placeholder">正在加载频谱图…</div></div><div class="time-axis"><span>0</span><span>6.6</span><span>13.1</span><span>19.7</span><span>26.2 ms</span></div><div class="time-axis-label">时间</div></div>
+              <div class="feature-view" id="spectrum-feature-view" hidden><img id="spectrum-feature-image" src="" alt="本图目标的局部 IQ 特征"/><p>每幅局部特征图对应上方检测结果的一个目标。</p></div>
+              <div class="playback-caption"><span class="blue-tag" id="spectrum-stage-label">01 · 宽带时频图</span><span id="spectrum-stage-text">将宽带复数 IQ 转换为二维时频图，展示同时存在的多个通信信号。</span></div>
+            </article>
+            <aside class="panel result-panel spectrum-result"><div class="panel-heading"><div><h4>当前目标的识别信息</h4><p>检测框定位 → IQ 提取 → 调制分类</p></div><span class="small-ghost">XCiT V4</span></div>
+              <div class="target-chooser"><span>选择检测目标</span><div id="target-buttons" class="target-chips"></div></div>
+              <div class="signal-key-result"><span>预测调制家族</span><strong id="target-family">—</strong><span>57 类细粒度预测</span><strong id="target-fine">—</strong></div>
+              <div class="result-mini-grid"><div><span>YOLO 置信度</span><strong id="target-yolo-conf">—</strong></div><div><span>中心频率</span><strong id="target-center">—</strong></div><div><span>信号带宽</span><strong id="target-bandwidth">—</strong></div><div><span>时间长度</span><strong id="target-duration">—</strong></div></div>
+              <div class="target-gt"><span>真实类别（仅用于评估）</span><strong id="target-gt">—</strong></div>
+              <div id="target-top5-wrap" class="top5-wrap"><div class="top5-header"><strong>XCiT Top-5 分类候选</strong><span>概率</span></div><div id="target-top5"></div></div>
+              <div class="stage-explainer" id="spectrum-stage-explainer"><span id="spectrum-explainer-title">阶段说明</span><p id="spectrum-explainer-body">观察宽带输入的时频分布，尚未展示检测与识别结果。</p></div>
+              <div class="step-actions"><button class="button button-quiet" id="spectrum-prev" type="button">上一步</button><button class="button button-primary" id="spectrum-next" type="button">下一步</button></div>
+            </aside>
+          </div>
+          <article class="panel detections-panel"><div class="panel-heading"><div><h4>本图检测目标</h4><p>点击任一行可以选中检测框，查看对应的分类详情</p></div><span id="spectrum-matched-stats" class="small-ghost">—</span></div><div class="table-scroller"><table class="result-table"><thead><tr><th>目标</th><th>YOLO 置信度</th><th>中心频率</th><th>带宽</th><th>预测家族</th><th>细粒度预测</th><th>真实类别</th></tr></thead><tbody id="spectrum-target-tbody"></tbody></table></div></article>
+        </section>
+        <section class="analysis-section" aria-label="频谱检测与分类批量评估"><div class="section-heading"><div><h3>批量实验表现</h3><p>YOLO 检测和 XCiT 分类使用不同的评测批次，分别展示其真实统计结果</p></div><span class="outline-tag">独立批量统计</span></div>
+          <div class="spectrum-metric-strip"><div><span>YOLO mAP@0.5</span><strong id="metric-map50">—</strong><small>Seed 42 · 50 张图</small></div><div><span>YOLO mAP@0.5:0.95</span><strong id="metric-map95">—</strong><small>Seed 42 · 50 张图</small></div><div><span>XCiT V4 家族准确率</span><strong id="metric-family">—</strong><small>Seed 161803 · 匹配目标</small></div><div><span>57 类 Top-1</span><strong id="metric-fine">—</strong><small>Seed 161803 · 匹配目标</small></div></div>
+          <article class="panel chart-panel"><div class="panel-heading"><div><h4 id="spectrum-insights-title">XCiT V4 各调制家族的识别表现</h4><p id="spectrum-insights-description">100 张宽带图 · 381 个成功匹配目标</p></div><div class="display-switch compact" id="spectrum-insights-switch"><button type="button" data-insight="family" class="active">各调制家族</button><button type="button" data-insight="training">V4 训练过程</button></div></div><div id="spectrum-insights-content" class="spectrum-insights-slot"></div></article>
+        </section>
+      </section>
+    </main>
+    <footer class="page-footer"><span>RF-SepEdge · 基于真实实验记录的离线回放界面</span><span id="footer-data-origin">MIT RF Challenge · TorchSig 2.1.1</span></footer>
+  </div>
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="图像放大查看"><button type="button" id="lightbox-close" class="lightbox-close" aria-label="关闭放大图片">✕ 关闭</button><img id="lightbox-image" src="" alt="放大的实验图像"/></div>
+<script>
+/* RF-SepEdge showcase frontend. No inference, no trained model running in browser.
+   All displayed observations come from demo-results/manifest.json and linked files. */
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const DEMO_REMOTE = 'https://raw.githubusercontent.com/Realyangy/cloud-edge/main/RF-SepEdge/demo-results/';
+  const DEMO_LOCAL = new URL('../demo-results/', window.location.href).href;
+  const INTERFERENCES = ['CommSignal2','CommSignal3','CommSignal5G1','EMISignal1'];
+  const TRACKS = {
+    mit: [
+      ['混合输入', '查看目标通信信号与干扰信号叠加形成的复数 IQ。', '目标信号与干扰帧相加形成混合输入；WaveNet 推理时不会看到目标信号真值。'],
+      ['WaveNet 分离', 'WaveNet 接收混合 IQ，并输出估计的目标复数波形。', '模型根据当前目标信号与干扰类型选择对应的官方预训练权重；这里回放的是已经完成的推理结果。'],
+      ['目标波形恢复', '比较目标真值、混合输入和 WaveNet 恢复结果的波形与时频特征。', '目标 SOI 真值只用于结果对比；恢复波形来自 WaveNet 输出，不是把真值直接用于推理。'],
+      ['效果评估', '使用官方解调流程，对比恢复前后的 BER 和波形 MSE。', 'BER 为错误比特数 / 总比特数；零观测误码不代表理论误码率严格为零。']
+    ],
+    spectrum: [
+      ['宽带时频图', '将 262,144 点宽带复数 IQ 转换为二维时频图。', '本图来自 TorchSig 固定种子生成的真实实验数据流，时间和频率轴根据采样率换算。'],
+      ['YOLO 检测定位', 'YOLO11n 定位不同信号出现的时间范围与频率范围。', '检测框由已保存的 YOLO 预测结果重现。点击框，可选中该目标。'],
+      ['目标 IQ 提取', '根据检测框下变频、低通滤波、重采样，并进行复数 RMS 归一化。', '每个目标提取成 2 × 4096 的 I/Q 输入；显示的局部特征来自本次真实实验。'],
+      ['XCiT 调制识别', 'XCiT V4 对提取 IQ 进行 57 类细分预测，并汇总为调制家族概率。', '预测家族通过对该家族各细分类概率求和得到，不一定等于细粒度 Top-1 所属家族。']
+    ]
+  };
+  const state = {
+    root: null, manifest: null, task: 'mit', mitStep: 0, mitView: 'waveforms', mitChart: 'ber',
+    mitSample: null, mitRows: {}, playbackTimer: null, playbackTask: null, spectrumStep: 0, spectrumSample: 60,
+    spectrumData: null, targetIndex: 0, spectrumInsight: 'family',
+    spectrumSummary: {}, trainingHistory: null, yoloSummary: null, lightboxUrl: ''
+  };
+  const cache = new Map();
+  const fmt = (n, digits = 2) => Number.isFinite(Number(n)) ? Number(n).toFixed(digits) : '—';
+  const pct = (n, digits = 2) => Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(digits)}%` : '—';
+  const escape = (x) => String(x ?? '').replace(/[&<>"']/g, a => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[a]));
+  const asset = (path) => new URL(String(path).replace(/^\/+/, ''), state.root || DEMO_REMOTE).href;
+  const rootAsset = (path, root) => new URL(String(path).replace(/^\/+/, ''), root).href;
+
+  function showError(message) {
+    $('error-banner').hidden = false;
+    $('error-banner').textContent = message;
+    $('data-status').textContent = '数据连接异常';
+    document.querySelector('.status-line').classList.add('error');
+  }
+  async function fetchJSON(path) {
+    if (cache.has(path)) return cache.get(path);
+    const res = await fetch(asset(path), {cache: 'no-store'});
+    if (!res.ok) throw new Error(`${res.status} ${path}`);
+    const json = await res.json();
+    cache.set(path, json);
+    return json;
+  }
+  async function fetchCSV(path) {
+    if (cache.has(path)) return cache.get(path);
+    const res = await fetch(asset(path), {cache: 'no-store'});
+    if (!res.ok) throw new Error(`${res.status} ${path}`);
+    const rows = parseCSV(await res.text());
+    cache.set(path, rows);
+    return rows;
+  }
+  function parseCSV(text) {
+    const lines = text.replace(/\r/g, '').trim().split('\n').filter(Boolean);
+    if (lines.length < 2) return [];
+    const keys = lines[0].split(',').map(x => x.trim());
+    return lines.slice(1).map(line => {
+      const values = line.split(',');
+      return Object.fromEntries(keys.map((k, i) => [k, values[i]]));
+    });
+  }
+  function imageLoad(element, placeholder, path) {
+    const img = $(element), cover = $(placeholder);
+    if (!img) return;
+    if (cover) { cover.hidden = false; cover.textContent = '正在加载实验图像…'; }
+    img.style.opacity = '0';
+    let attemptedRemote = false;
+    img.onload = () => { img.style.opacity = '1'; if (cover) cover.hidden = true; };
+    img.onerror = () => {
+      if (!attemptedRemote && state.root !== DEMO_REMOTE) {
+        attemptedRemote = true;
+        img.src = rootAsset(path, DEMO_REMOTE);
+        return;
+      }
+      img.style.opacity = '0';
+      if (cover) { cover.hidden = false; cover.textContent = '未找到图像素材，请确认 demo-results/ 已同步。'; }
+    };
+    img.src = asset(path);
+  }
+  function setPlainImage(element, path) {
+    const img = $(element);
+    img.onerror = () => { if (state.root !== DEMO_REMOTE && !img.dataset.fallback) {
+      img.dataset.fallback = '1'; img.src = rootAsset(path, DEMO_REMOTE);
+    }};
+    img.removeAttribute('data-fallback');
+    img.src = asset(path);
+  }
+  function activateButtons(parent, attribute, value) {
+    $(parent).querySelectorAll(`[${attribute}]`).forEach(b => {
+      const active = b.getAttribute(attribute) === String(value);
+      b.classList.toggle('active', active);
+      if (attribute === 'data-step') b.classList.toggle('visited', Number(b.getAttribute(attribute)) < Number(value));
+      b.setAttribute('aria-pressed', String(active));
+    });
+  }
+  function stopPlayback() {
+    if (state.playbackTimer !== null) {clearInterval(state.playbackTimer);state.playbackTimer=null;}
+    state.playbackTask=null;
+    for(const name of ['mit','spectrum']){const b=$(name+'-auto');if(b){b.classList.remove('playing');b.textContent='▶ 自动回放';}}
+  }
+  function togglePlayback(task) {
+    if(state.playbackTask===task){stopPlayback();return;}
+    stopPlayback();state.playbackTask=task;const btn=$(task+'-auto');btn.textContent='Ⅱ 暂停回放';btn.classList.add('playing');
+    const update=task==='mit'?setMITStep:setSpectrumStep;
+    update(0);
+    state.playbackTimer=setInterval(()=>{const idx=task==='mit'?state.mitStep:state.spectrumStep;if(idx>=3){stopPlayback();return;}update(idx+1);if(idx+1===3)stopPlayback();},2800);
+  }
+  function setTask(task) {
+    stopPlayback();
+    state.task = task;
+    $('view-mit').hidden = task !== 'mit'; $('view-spectrum').hidden = task !== 'spectrum';
+    for (const key of ['mit','spectrum']) {
+      const b = $('tab-' + key); const active = key === task;
+      b.classList.toggle('active',active); b.setAttribute('aria-selected',String(active));
+    }
+    window.location.hash = task === 'spectrum' ? '#spectrum' : '#mit';
+  }
+  function updateMITSelection() {
+    stopPlayback();
+    if (!state.manifest) return;
+    const soi = $('mit-soi').value, interf = $('mit-interference').value, sinr = Number($('mit-sinr').value);
+    state.mitSample = state.manifest.mit_wavenet.samples.find(s => s.soi_type === soi && s.interference === interf && Number(s.nominal_sinr_db) === sinr) || null;
+    if (!state.mitSample) {
+      $('mit-sample-id').textContent = '无匹配样本';
+      return;
+    }
+    state.mitStep = 0; state.mitView = 'waveforms';
+    renderMIT(); renderMITCharts();
+  }
+  function renderMIT() {
+    const r = state.mitSample; if (!r) return;
+    activateButtons('mit-steps', 'data-step', state.mitStep);
+    activateButtons('mit-view-switch', 'data-view', state.mitView);
+    $('mit-prev').disabled = state.mitStep === 0;
+    $('mit-next').disabled = state.mitStep === 3;
+    $('mit-next').textContent = state.mitStep === 3 ? '已到最后一步' : '下一步';
+    $('mit-sample-id').textContent = `#${r.sample_index} · Seed 42`;
+    const info = TRACKS.mit[state.mitStep];
+    $('mit-stage-label').textContent = `0${state.mitStep + 1} · ${info[0]}`;
+    $('mit-stage-text').textContent = info[1];
+    $('mit-explainer-title').textContent = `当前阶段 · ${info[0]}`;
+    $('mit-explainer-body').textContent = info[2];
+    $('mit-visual-title').textContent = state.mitView === 'waveforms' ? '同一样本的 I/Q 波形对比' : '同一样本的时频特征对比';
+    $('mit-visual-subtitle').textContent = '混合输入 · 目标真值 · WaveNet 恢复';
+    const path = state.mitView === 'waveforms' ? r.waveforms : r.spectrograms;
+    imageLoad('mit-main-image','mit-image-placeholder',path);
+    state.mitCurrentImage = path;
+    $('mit-ber-input').textContent = pct(r.input_ber);
+    $('mit-ber-out').textContent = pct(r.wavenet_ber);
+    const drop = Number(r.input_ber) > 0 ? (Number(r.input_ber) - Number(r.wavenet_ber)) / Number(r.input_ber) : 0;
+    $('mit-ber-drop').textContent = `${drop >= 0 ? '↓ ' : '↑ '}${fmt(Math.abs(drop) * 100, 1)}%`;
+    $('mit-drop-bar').style.width = `${Math.max(0,Math.min(100,drop * 100))}%`;
+    $('mit-actual-sinr').textContent = `${fmt(r.actual_input_sinr_db)} dB`;
+    $('mit-mse').textContent = `${fmt(r.wavenet_mse_db)} dB`;
+    // From manifest MSE/BER; sample-level bit counts can differ by SOI.
+    const nbits = r.soi_type === 'QPSK' ? 5120 : 57344;
+    const wrong = Math.round(Number(r.wavenet_ber) * nbits);
+    $('mit-bit-errors').textContent = `${wrong} / ${nbits.toLocaleString('en-US')}`;
+  }
+  function setMITStep(step) {
+    state.mitStep = Math.max(0,Math.min(3,step));
+    if (state.mitStep === 2) state.mitView = 'spectrograms';
+    else if (state.mitStep === 0 || state.mitStep === 1) state.mitView = 'waveforms';
+    renderMIT();
+  }
+  function renderMITCharts() {
+    const soi = $('mit-soi').value, interf = $('mit-interference').value;
+    const rows = (state.mitRows[interf] || []).filter(x => x.soi_type === soi).sort((a,b)=>Number(a.nominal_sinr_db)-Number(b.nominal_sinr_db));
+    activateButtons('mit-chart-switch','data-chart',state.mitChart);
+    $('mit-chart-title').textContent = state.mitChart === 'ber' ? 'BER 随 SINR 变化' : 'MSE 随 SINR 变化';
+    if (!rows.length) { $('mit-line-chart').innerHTML = '<div class="empty-state">正在加载批量测试记录…</div>'; return; }
+    const vals = rows.map(r => ({x:Number(r.nominal_sinr_db), a:Number(state.mitChart==='ber'?r.input_ber:r.mean_input_mse_db)*(state.mitChart==='ber'?100:1),b:Number(state.mitChart==='ber'?r.wavenet_ber:r.mean_wavenet_mse_db)*(state.mitChart==='ber'?100:1)}));
+    $('mit-line-chart').innerHTML = renderLineChart(vals, state.mitChart === 'ber' ? '%' : 'dB', state.mitChart === 'ber' ? 'SINR (dB)' : 'SINR (dB)', state.mitChart === 'ber');
+    const aggregates = INTERFERENCES.map(name=>{
+      const rs=(state.mitRows[name]||[]).filter(x=>x.soi_type===soi);
+      const bits=rs.reduce((s,x)=>s+Number(x.bits_evaluated||0),0);
+      const errors=rs.reduce((s,x)=>s+Number(x.wavenet_bit_errors||0),0);
+      return {name,percent:bits?errors/bits*100:null};
+    });
+    $('mit-compare-desc').textContent = `${soi==='QPSK'?'QPSK':'OFDM-QPSK'} · 4 类干扰 · 每类 70 条`;
+    const max=Math.max(1,...aggregates.map(x=>x.percent||0));
+    $('mit-interference-bars').innerHTML=aggregates.map(x=>`<div class="comparison-row"><span>${escape(x.name)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,(x.percent||0)/max*100)}%"></div></div><strong>${x.percent===null?'—':fmt(x.percent)+'%'}</strong></div>`).join('');
+  }
+  function renderLineChart(rows, suffix, xLabel, nonnegative) {
+    if (!rows.length) return '<div class="empty-state">暂无曲线数据</div>';
+    const W=760,H=300,left=68,right=30,top=26,bottom=55;
+    const all=rows.flatMap(x=>[x.a,x.b]).filter(Number.isFinite);if(!all.length)return '<div class="empty-state">暂无可显示数值</div>';
+    let min=Math.min(...all),max=Math.max(...all);
+    if(nonnegative)min=0;
+    if(min===max){min-=1;max+=1}
+    else {let pad=(max-min)*.12;min-=nonnegative?0:pad;max+=pad}
+    const minx=Math.min(...rows.map(x=>x.x)), maxx=Math.max(...rows.map(x=>x.x));
+    const X=v=>left+(v-minx)/Math.max(1,maxx-minx)*(W-left-right);
+    const Y=v=>top+(max-v)/(max-min)*(H-top-bottom);
+    const path=k=>rows.map((r,i)=>`${i?'L':'M'}${X(r.x).toFixed(1)} ${Y(r[k]).toFixed(1)}`).join(' ');
+    let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="真实评估曲线">`;
+    for(let i=0;i<=4;i++){const y=top+i*(H-top-bottom)/4;const v=max-i*(max-min)/4;s+=`<line x1="${left}" y1="${y}" x2="${W-right}" y2="${y}" stroke="#e3eaf4"/><text x="${left-11}" y="${y+5}" text-anchor="end" fill="#71839d" font-size="14">${fmt(v,nonnegative?0:1)}${suffix}</text>`}
+    for(const r of rows)s+=`<text x="${X(r.x)}" y="${H-25}" fill="#71839d" font-size="14" text-anchor="middle">${r.x}</text>`;
+    s+=`<text x="${(W+left-right)/2}" y="${H-4}" fill="#71839d" text-anchor="middle" font-size="14">${escape(xLabel)}</text>`;
+    s+=`<path d="${path('a')}" fill="none" stroke="#91bbff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><path d="${path('b')}" fill="none" stroke="#2f61ed" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    for(const r of rows)for(const [k,c] of [['a','#91bbff'],['b','#2f61ed']])s+=`<circle cx="${X(r.x)}" cy="${Y(r[k])}" r="5" fill="white" stroke="${c}" stroke-width="3"><title>SINR ${r.x} · ${k==='a'?'输入':'恢复'} ${fmt(r[k],3)}${suffix}</title></circle>`;
+    s+='</svg>';return s;
+  }
+
+  async function selectSpectrumSample(n) {
+    stopPlayback();
+    if (!state.manifest) return;
+    state.spectrumSample = Number(n);
+    const rec=state.manifest.yolo_xcit_v4.samples.find(x=>Number(x.sample_index)===state.spectrumSample);
+    if (!rec) return;
+    state.spectrumRecord=rec;
+    state.spectrumStep=0; state.targetIndex=0; state.spectrumData=null;
+    $('spectrum-sample-count').textContent='正在加载…';
+    $('spectrum-target-tbody').innerHTML='<tr><td colspan="7">正在加载目标记录…</td></tr>';
+    try {
+      state.spectrumData=await fetchJSON(rec.sample_json);
+      state.targetIndex=state.spectrumData.predictions.findIndex(x=>x.ground_truth);
+      if (state.targetIndex<0)state.targetIndex=0;
+      renderSpectrum();
+    } catch(e){showError('读取频谱样本失败：'+e.message)}
+  }
+  function renderSpectrum() {
+    const d=state.spectrumData,r=state.spectrumRecord;if(!d||!r)return;
+    const pred=d.predictions[state.targetIndex];if(!pred)return;
+    activateButtons('spectrum-steps','data-step',state.spectrumStep);
+    const mode=state.spectrumStep===0?'raw':state.spectrumStep===2?'features':'boxes';
+    activateButtons('spectrum-image-mode','data-mode',mode);
+    $('spectrum-prev').disabled=state.spectrumStep===0;
+    $('spectrum-next').disabled=state.spectrumStep===3;
+    $('spectrum-next').textContent=state.spectrumStep===3?'已到最后一步':'下一步';
+    $('spectrum-sample-count').textContent=`${d.metrics.ground_truth_count} 个真实目标 · ${d.metrics.prediction_count} 个检测框`;
+    const st=TRACKS.spectrum[state.spectrumStep];
+    $('spectrum-stage-label').textContent=`0${state.spectrumStep+1} · ${st[0]}`;
+    $('spectrum-stage-text').textContent=st[1];
+    $('spectrum-explainer-title').textContent=`当前阶段 · ${st[0]}`;
+    $('spectrum-explainer-body').textContent=st[2];
+    $('freq-plot-shell').hidden=mode==='features';$('spectrum-feature-view').hidden=mode!=='features';
+    if(mode==='features'){
+      $('spectrum-visual-title').textContent='检测目标的局部 IQ 特征';
+      $('spectrum-visual-subtitle').textContent='当前选中目标 #' + (state.targetIndex+1);
+      const ft=(d.feature_assets||[]).find(f=>Number(f.prediction_index)===Number(pred.prediction_index)) || d.feature_assets[state.targetIndex];
+      const rel=ft?.file ? r.sample_json.replace(/\/sample\.json$/,'/')+ft.file : r.local_features;
+      setPlainImage('spectrum-feature-image',rel);
+      state.spectrumCurrentImage=rel;
+    }else{
+      $('spectrum-visual-title').textContent=mode==='raw'?'原始宽带时频图':'YOLO11n 信号检测定位';
+      $('spectrum-visual-subtitle').textContent='横轴：时间 (ms) · 纵轴：频率 (MHz)';
+      imageLoad('spectrum-image','spectrum-image-placeholder',r.spectrogram);
+      $('spectrum-boxes').innerHTML = mode==='boxes'?d.predictions.map((p,i)=>{
+        const [x0,y0,x1,y1]=p.box_xyxy_normalized.map(v=>Math.min(1,Math.max(0,Number(v))));
+        return `<button type="button" class="detect-box ${i===state.targetIndex?'active':''}" data-target="${i}" aria-label="选择检测目标 ${i+1}" style="left:${x0*100}%;top:${y0*100}%;width:${Math.max(.1,(x1-x0)*100)}%;height:${Math.max(.1,(y1-y0)*100)}%"><span class="detect-box-label">#${i+1}</span></button>`;
+      }).join(''):'';
+      $('spectrum-boxes').querySelectorAll('[data-target]').forEach(b=>b.addEventListener('click',()=>selectTarget(Number(b.dataset.target))));
+      state.spectrumCurrentImage=mode==='boxes'?r.yolo_overlay:r.spectrogram;
+    }
+    // Keep target chooser and metrics synchronized with selected bounding box.
+    $('target-buttons').innerHTML=d.predictions.map((p,i)=>`<button type="button" data-target="${i}" class="${i===state.targetIndex?'active':''}" aria-pressed="${i===state.targetIndex}">#${i+1}</button>`).join('');
+    $('target-buttons').querySelectorAll('[data-target]').forEach(b=>b.addEventListener('click',()=>selectTarget(Number(b.dataset.target))));
+    const detail=pred.with_rms||{};
+    $('target-family').textContent=state.spectrumStep===3?(detail.family_top1||'—'):'未展示';
+    $('target-fine').textContent=state.spectrumStep===3?(detail.fine_top1||'—'):'等待分类阶段';
+    $('target-yolo-conf').textContent=state.spectrumStep>=1?pct(pred.confidence,1):'—';
+    $('target-center').textContent=state.spectrumStep>=1?`${Number(pred.extraction?.predicted_center_offset_hz)/1e6>=0?'+':''}${fmt(Number(pred.extraction?.predicted_center_offset_hz)/1e6,2)} MHz`:'—';
+    $('target-bandwidth').textContent=state.spectrumStep>=1?`${fmt(Number(pred.extraction?.predicted_bandwidth_hz)/1e6,2)} MHz`:'—';
+    $('target-duration').textContent=state.spectrumStep>=1?`${fmt(Number(pred.extraction?.input_iq_count)/10000,2)} ms`:'—';
+    $('target-gt').textContent=state.spectrumStep===3?(pred.ground_truth?.class||'未匹配真实目标'):'评估阶段显示';
+    $('target-top5-wrap').hidden=state.spectrumStep!==3;
+    $('target-top5').innerHTML=(detail.fine_top5||[]).map(x=>`<div class="top5-row"><span class="top5-label" title="${escape(x.class)}">${escape(x.class)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,Number(x.probability)*100))}%"></div></div><strong>${pct(x.probability,1)}</strong></div>`).join('');
+    renderTargetTable();
+    $('spectrum-matched-stats').textContent=`TP ${d.metrics.TP} · FP ${d.metrics.FP} · FN ${d.metrics.FN}`;
+  }
+  function renderTargetTable(){
+    const d=state.spectrumData;if(!d)return;
+    $('spectrum-target-tbody').innerHTML=d.predictions.map((p,i)=>{
+      const f=p.with_rms||{}, gt=p.ground_truth;
+      const match=gt?.family===f.family_top1; const fine=gt?.class===f.fine_top1;
+      const famclass=gt?(match?'correct':'wrong'):'dim';
+      const fineclass=gt?(fine?'correct':'wrong'):'dim';
+      const fc=Number(p.extraction?.predicted_center_offset_hz)/1e6;
+      const bw=Number(p.extraction?.predicted_bandwidth_hz)/1e6;
+      return `<tr data-target="${i}" class="${i===state.targetIndex?'selected':''}" tabindex="0" aria-label="选择目标 ${i+1}"><td><strong>#${i+1}</strong></td><td>${pct(p.confidence,1)}</td><td>${fc>=0?'+':''}${fmt(fc,2)} MHz</td><td>${fmt(bw,2)} MHz</td><td><span class="${famclass}">${escape(f.family_top1||'—')}</span></td><td><span class="${fineclass}">${escape(f.fine_top1||'—')}</span></td><td>${escape(gt?.class||'未匹配')}</td></tr>`;
+    }).join('');
+    $('spectrum-target-tbody').querySelectorAll('[data-target]').forEach(tr=>{
+      tr.addEventListener('click',()=>selectTarget(Number(tr.dataset.target),true));
+      tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectTarget(Number(tr.dataset.target),true)}});
+    });
+  }
+  function selectTarget(index,reveal=false){
+    if (!state.spectrumData||!state.spectrumData.predictions[index])return;
+    state.targetIndex=index;if(reveal)state.spectrumStep=3;renderSpectrum();
+  }
+  function setSpectrumStep(n) {state.spectrumStep=Math.max(0,Math.min(3,n));renderSpectrum()}
+  function renderSpectrumMetrics(){
+    const s=state.spectrumSummary['v4-final'];const y=state.yoloSummary;
+    if (y){$('metric-map50').textContent=pct(y.mAP50);$('metric-map95').textContent=pct(y.mAP50_95)}
+    if(s){$('metric-family').textContent=pct(s.classification.with_rms.family_accuracy_on_matched);$('metric-fine').textContent=pct(s.classification.with_rms.fine_accuracy_on_matched)}
+  }
+  function renderInsights() {
+    activateButtons('spectrum-insights-switch','data-insight',state.spectrumInsight);
+    const c=$('spectrum-insights-content');const a=state.spectrumSummary;
+    if(!a['v4-final']){c.innerHTML='<div class="empty-state">正在加载 XCiT V4 评测数据…</div>';return}
+    const final=a['v4-final'].classification.with_rms;
+    if(state.spectrumInsight==='family'){
+      $('spectrum-insights-title').textContent='XCiT V4 各调制家族的识别表现';
+      $('spectrum-insights-description').textContent='100 张宽带图 · 按 381 个已匹配目标统计';
+      const rows=Object.entries(final.family_by_gt).map(([name,x])=>({name,count:x.matched_classified,fam:x.family_correct/x.matched_classified,fine:x.fine_correct/x.matched_classified}));
+      c.innerHTML='<div class="family-performance">'+rows.map(x=>`<div><span>${escape(x.name)}</span><strong>${pct(x.fam)}</strong><small>细分类 ${pct(x.fine)} · ${x.count} 个匹配目标</small></div>`).join('')+'</div>';
+    }else{
+      $('spectrum-insights-title').textContent='XCiT V4 微调训练过程';
+      $('spectrum-insights-description').textContent='独立验证集 7,950 个目标 · 10 个 Epoch';
+      const hist=state.trainingHistory?.epochs||[];
+      const rows=hist.map(x=>({x:Number(x.epoch),a:Number(x.train_fine_accuracy)*100,b:Number(x.validation.fine_accuracy)*100}));
+      c.innerHTML='<div class="training-chart">'+renderLineChart(rows,'%','Epoch',true)+'</div><div class="model-legend"><span><i class="key-dot"></i>训练细类准确率</span><span><i class="key-dot v4"></i>验证细类准确率</span></div>';
+    }
+  }
+  function openLightbox(path){if(!path)return;const im=$('lightbox-image');im.src=asset(path);im.onerror=()=>{if(state.root!==DEMO_REMOTE)im.src=rootAsset(path,DEMO_REMOTE)};$('lightbox').hidden=false;document.body.style.overflow='hidden'}
+  function closeLightbox(){$('lightbox').hidden=true;document.body.style.overflow=''}
+  function attachEvents(){
+    $('tab-mit').addEventListener('click',()=>setTask('mit'));
+    $('tab-spectrum').addEventListener('click',()=>setTask('spectrum'));
+    for(const id of ['mit-soi','mit-interference','mit-sinr'])$(id).addEventListener('change',updateMITSelection);
+    $('mit-steps').querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{stopPlayback();setMITStep(Number(b.dataset.step))}));
+    $('mit-auto').addEventListener('click',()=>togglePlayback('mit'));
+    $('mit-prev').addEventListener('click',()=>{stopPlayback();setMITStep(state.mitStep-1)});
+    $('mit-next').addEventListener('click',()=>{stopPlayback();setMITStep(state.mitStep+1)});
+    $('mit-view-switch').querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.mitView=b.dataset.view;renderMIT()}));
+    $('mit-chart-switch').querySelectorAll('[data-chart]').forEach(b=>b.addEventListener('click',()=>{state.mitChart=b.dataset.chart;renderMITCharts()}));
+    $('mit-zoom').addEventListener('click',()=>openLightbox(state.mitCurrentImage));
+    $('spectrum-sample').addEventListener('change',e=>selectSpectrumSample(Number(e.target.value)));
+    $('spectrum-steps').querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{stopPlayback();setSpectrumStep(Number(b.dataset.step))}));
+    $('spectrum-auto').addEventListener('click',()=>togglePlayback('spectrum'));
+    $('spectrum-prev').addEventListener('click',()=>{stopPlayback();setSpectrumStep(state.spectrumStep-1)});
+    $('spectrum-next').addEventListener('click',()=>{stopPlayback();setSpectrumStep(state.spectrumStep+1)});
+    $('spectrum-image-mode').querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{stopPlayback();setSpectrumStep(({raw:0,boxes:1,features:2})[b.dataset.mode])}));
+    $('spectrum-zoom').addEventListener('click',()=>openLightbox(state.spectrumCurrentImage));
+    $('spectrum-insights-switch').querySelectorAll('[data-insight]').forEach(b=>b.addEventListener('click',()=>{state.spectrumInsight=b.dataset.insight;renderInsights()}));
+    $('lightbox-close').addEventListener('click',closeLightbox);
+    $('lightbox').addEventListener('click',e=>{if(e.target===$('lightbox'))closeLightbox()});
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox()});
+  }
+  async function init() {
+    attachEvents();
+    const opts = [DEMO_LOCAL,DEMO_REMOTE];
+    for (const root of opts) {
+      try {
+        const res=await fetch(rootAsset('manifest.json',root),{cache:'no-store'});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        const json=await res.json();
+        if(!Array.isArray(json.mit_wavenet?.samples)||!Array.isArray(json.yolo_xcit_v4?.samples))throw new Error('索引结构不完整');
+        state.root=root;state.manifest=json;cache.set('manifest.json',json);
+        break;
+      }catch(e){/* Fall back to public GitHub raw data if local results are absent. */}
+    }
+    if(!state.manifest){
+      showError('无法加载 demo-results/manifest.json。请检查网络连接，或将 frontend/ 与 demo-results/ 放在同一个 RF-SepEdge 目录，再从 RF-SepEdge 根目录启动 python -m http.server 8080。');
+      $('mit-image-placeholder').textContent='暂无实验数据';$('spectrum-image-placeholder').textContent='暂无实验数据';
+      return;
+    }
+    $('data-status').textContent=state.root===DEMO_LOCAL?'本地实验数据已就绪':'GitHub 实验数据已就绪';
+    document.querySelector('.status-line').classList.add('ready');
+    updateMITSelection();
+    const jobs=[
+      ...INTERFERENCES.map(async i=>{try{state.mitRows[i]=await fetchCSV(`signal-separation/${i.toLowerCase()}/by_sinr.csv`)}catch(e){console.error('CSV',i,e)}}),
+      ...['v4-final'].map(async v=>{try{state.spectrumSummary[v]=await fetchJSON(`spectrum-analysis/model-selection/${v}/summary.json`)}catch(e){console.error('Model',v,e)}}),
+      (async()=>{try{state.trainingHistory=await fetchJSON('spectrum-analysis/training-history/v4-final/history.json')}catch(e){console.error('History',e)}})(),
+      (async()=>{try{state.yoloSummary=await fetchJSON('yolo-detection/seed42-50/summary.json')}catch(e){console.error('YOLO',e)}})(),
+    ];
+    await selectSpectrumSample(60);
+    Promise.allSettled(jobs).then(()=>{renderMITCharts();renderSpectrumMetrics();renderInsights()});
+    setTask(location.hash==='#spectrum'?'spectrum':'mit');
+  }
+  init().catch(e=>showError('前端初始化失败：'+e.message));
+})();
+
+</script>
+</body>
+</html>

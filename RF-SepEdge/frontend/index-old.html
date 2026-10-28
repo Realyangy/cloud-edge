@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f8ff" />
+  <title>射频信号智能分析与恢复演示系统</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="31" height="31" fill="none"><path d="M4 20h7l4-9 8 18 5-12 3 3h5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div><h1>射频信号智能分析与恢复演示系统</h1><p class="brand-sub">信号分离与恢复 · 频谱检测与调制识别</p></div>
+      </div>
+      <div class="status-line"><span class="status-dot" aria-hidden="true"></span><span id="data-status">正在连接实验数据</span></div>
+    </header>
+
+    <nav class="primary-tabs" aria-label="任务切换">
+      <button type="button" id="tab-mit" class="task-tab active" aria-selected="true" role="tab" aria-controls="view-mit"><span class="tab-no">01</span> 混合信号分离与恢复</button>
+      <button type="button" id="tab-spectrum" class="task-tab" aria-selected="false" role="tab" aria-controls="view-spectrum"><span class="tab-no">02</span> 频谱检测与调制识别</button>
+    </nav>
+
+    <div id="error-banner" class="error-banner" role="alert" hidden></div>
+
+    <main>
+      <section id="view-mit" class="task-view" role="tabpanel" aria-labelledby="tab-mit">
+        <div class="intro-panel">
+          <div class="intro-copy">
+            <div class="eyebrow">任务一 · MIT WaveNet</div>
+            <h2>从混合信号中恢复目标通信信号</h2>
+            <p>在目标信号受到通信干扰时，WaveNet 从混合 IQ 中估计目标波形，再通过解调和误码率对恢复质量进行评价。</p>
+          </div>
+          <div class="intro-metrics"><div><strong>2</strong><span>目标信号类型</span></div><div><strong>4</strong><span>干扰类型</span></div><div><strong>560</strong><span>批量评估记录</span></div></div>
+        </div>
+
+        <section class="controls-panel" aria-label="MIT 样本选择">
+          <div class="control-group"><label for="mit-soi">目标信号</label><select id="mit-soi"><option value="QPSK">QPSK</option><option value="OFDMQPSK">OFDM-QPSK</option></select></div>
+          <div class="control-group"><label for="mit-interference">干扰类型</label><select id="mit-interference"><option value="CommSignal2">CommSignal2</option><option value="CommSignal3">CommSignal3</option><option value="CommSignal5G1">CommSignal5G1</option><option value="EMISignal1">EMISignal1</option></select></div>
+          <div class="control-group"><label for="mit-sinr">标称 SINR</label><select id="mit-sinr"><option value="-18">-18 dB</option><option value="-9" selected>-9 dB</option><option value="0">0 dB</option></select></div>
+          <div class="control-summary"><span>当前样本</span><strong id="mit-sample-id">—</strong></div>
+        </section>
+
+        <section class="playback-section" aria-label="MIT 推理过程回放">
+          <div class="section-heading"><div><h3>样本推理过程</h3><p>逐步查看真实实验中的输入、恢复与评估</p></div><div class="heading-actions"><button type="button" class="auto-button" id="mit-auto">▶ 自动回放</button><span class="outline-tag">真实结果回放 · 非实时推理</span></div></div>
+          <div class="stepper" id="mit-steps">
+            <button type="button" class="step active" data-step="0"><span class="step-index">01</span><span class="step-name">混合信号输入</span></button>
+            <button type="button" class="step" data-step="1"><span class="step-index">02</span><span class="step-name">WaveNet 分离</span></button>
+            <button type="button" class="step" data-step="2"><span class="step-index">03</span><span class="step-name">波形恢复</span></button>
+            <button type="button" class="step" data-step="3"><span class="step-index">04</span><span class="step-name">恢复效果评估</span></button>
+          </div>
+          <div class="workspace-grid mit-workspace">
+            <article class="panel visual-panel">
+              <div class="panel-heading"><div><h4 id="mit-visual-title">信号波形对比</h4><p id="mit-visual-subtitle">混合输入 · 目标真值 · WaveNet 恢复</p></div><button class="icon-button" id="mit-zoom" type="button" aria-label="放大查看图像" title="放大查看"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+              <div class="display-switch" id="mit-view-switch"><button type="button" data-view="waveforms" class="active">I/Q 波形</button><button type="button" data-view="spectrograms">时频图</button></div>
+              <div class="mit-image-frame"><img id="mit-main-image" src="" alt="真实 MIT WaveNet 信号波形对比" /><div class="image-placeholder" id="mit-image-placeholder">正在加载实验图像…</div></div>
+              <div class="playback-caption"><span id="mit-stage-label" class="blue-tag">01 · 混合输入</span><span id="mit-stage-text">查看带有干扰的混合 IQ 波形，与目标真值进行对照。</span></div>
+            </article>
+            <aside class="panel result-panel" id="mit-result-panel">
+              <div class="panel-heading"><div><h4>本条样本的恢复结果</h4><p>输入与 WaveNet 输出的实际对比</p></div><span class="small-ghost">WaveNet</span></div>
+              <div class="ber-comparison"><div class="ber-card"><span>输入误码率 BER</span><strong id="mit-ber-input">—</strong></div><div class="ber-arrow" aria-hidden="true">→</div><div class="ber-card highlight"><span>恢复后 BER</span><strong id="mit-ber-out">—</strong></div></div>
+              <div class="recovery-progress"><div class="recovery-top"><span>误码率相对下降</span><strong id="mit-ber-drop">—</strong></div><div class="bar-track"><div class="bar-fill" id="mit-drop-bar" style="width:0%"></div></div></div>
+              <div class="result-mini-grid"><div><span>实际 SINR</span><strong id="mit-actual-sinr">—</strong></div><div><span>恢复波形 MSE</span><strong id="mit-mse">—</strong></div><div><span>错误比特数</span><strong id="mit-bit-errors">—</strong></div><div><span>样本长度</span><strong>40,960 点</strong></div></div>
+              <div class="stage-explainer"><span id="mit-explainer-title">阶段说明</span><p id="mit-explainer-body">将目标通信信号与真实干扰帧组合，得到模型需要处理的混合复数 IQ。</p></div>
+              <div class="step-actions"><button class="button button-quiet" id="mit-prev" type="button">上一步</button><button class="button button-primary" id="mit-next" type="button">下一步</button></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="analysis-section" aria-label="MIT 批量实验结果">
+          <div class="section-heading"><div><h3>批量实验表现</h3><p>基于 Seed 42 的 560 条测试记录；曲线与当前选择的目标、干扰同步</p></div><span class="outline-tag">批量结果 · 区别于上方单样本</span></div>
+          <div class="analysis-grid">
+            <article class="panel chart-panel"><div class="panel-heading"><div><h4 id="mit-chart-title">BER 随 SINR 变化</h4><p>输入信号与 WaveNet 恢复结果</p></div><div class="display-switch compact" id="mit-chart-switch"><button type="button" class="active" data-chart="ber">BER</button><button type="button" data-chart="mse">MSE</button></div></div><div id="mit-line-chart" class="chart-slot" aria-label="MIT 性能曲线"></div><div class="legend"><span><i class="legend-dot light"></i>混合输入</span><span><i class="legend-dot deep"></i>WaveNet 恢复</span></div></article>
+            <article class="panel chart-panel"><div class="panel-heading"><div><h4>不同干扰下的平均恢复 BER</h4><p id="mit-compare-desc">QPSK · 4 类干扰 · 每类 70 条</p></div></div><div id="mit-interference-bars" class="comparison-bars"></div></article>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-spectrum" class="task-view" role="tabpanel" aria-labelledby="tab-spectrum" hidden>
+        <div class="intro-panel">
+          <div class="intro-copy"><div class="eyebrow">任务二 · YOLO11n + XCiT V4</div><h2>从宽带频谱中定位并识别多个信号</h2><p>YOLO11n 先在时频图中定位信号，再从宽带 IQ 中提取目标片段，由微调后的 XCiT V4 判断调制家族与具体类型。</p></div>
+          <div class="intro-metrics"><div><strong>94.94%</strong><span>YOLO mAP@0.5</span></div><div><strong>82.94%</strong><span>V4 家族准确率</span></div><div><strong>38.06%</strong><span>57 类 Top-1</span></div></div>
+        </div>
+        <section class="controls-panel" aria-label="频谱样本选择"><div class="control-group wide"><label for="spectrum-sample">宽带测试样本</label><select id="spectrum-sample"><option value="8">Sample 008</option><option value="54">Sample 054</option><option value="60" selected>Sample 060</option><option value="61">Sample 061</option></select></div><div class="control-summary"><span>数据来源</span><strong>Seed 161803 · TorchSig 2.1.1</strong></div><div class="control-summary"><span>当前图中的目标</span><strong id="spectrum-sample-count">—</strong></div></section>
+        <section class="playback-section" aria-label="频谱检测与识别过程回放">
+          <div class="section-heading"><div><h3>样本推理过程</h3><p>点击检测框，可以查看该目标的特征与 XCiT 预测结果</p></div><div class="heading-actions"><button type="button" class="auto-button" id="spectrum-auto">▶ 自动回放</button><span class="outline-tag">真实结果回放 · 非实时推理</span></div></div>
+          <div class="stepper" id="spectrum-steps"><button type="button" class="step active" data-step="0"><span class="step-index">01</span><span class="step-name">宽带时频图</span></button><button type="button" class="step" data-step="1"><span class="step-index">02</span><span class="step-name">YOLO 检测定位</span></button><button type="button" class="step" data-step="2"><span class="step-index">03</span><span class="step-name">目标 IQ 提取</span></button><button type="button" class="step" data-step="3"><span class="step-index">04</span><span class="step-name">XCiT 调制识别</span></button></div>
+          <div class="workspace-grid spectrum-workspace">
+            <article class="panel visual-panel"><div class="panel-heading"><div><h4 id="spectrum-visual-title">宽带时频图</h4><p id="spectrum-visual-subtitle">横轴：时间 · 纵轴：频率</p></div><button class="icon-button" type="button" id="spectrum-zoom" title="放大查看" aria-label="放大查看"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+              <div id="spectrum-image-mode" class="display-switch"><button type="button" data-mode="raw" class="active">原始时频图</button><button type="button" data-mode="boxes">检测结果</button><button type="button" data-mode="features">局部特征</button></div>
+              <div class="frequency-plot-shell" id="freq-plot-shell"><div class="frequency-axis"><span>+5</span><span>+2.5</span><span>0</span><span>-2.5</span><span>-5</span><div class="frequency-axis-label">频率 (MHz)</div></div><div class="frequency-plot"><img id="spectrum-image" src="" alt="宽带信号时频图"/><div id="spectrum-boxes" class="detect-layer"></div><div id="spectrum-image-placeholder" class="image-placeholder">正在加载频谱图…</div></div><div class="time-axis"><span>0</span><span>6.6</span><span>13.1</span><span>19.7</span><span>26.2 ms</span></div><div class="time-axis-label">时间</div></div>
+              <div class="feature-view" id="spectrum-feature-view" hidden><img id="spectrum-feature-image" src="" alt="本图目标的局部 IQ 特征"/><p>每幅局部特征图对应上方检测结果的一个目标。</p></div>
+              <div class="playback-caption"><span class="blue-tag" id="spectrum-stage-label">01 · 宽带时频图</span><span id="spectrum-stage-text">将宽带复数 IQ 转换为二维时频图，展示同时存在的多个通信信号。</span></div>
+            </article>
+            <aside class="panel result-panel spectrum-result"><div class="panel-heading"><div><h4>当前目标的识别信息</h4><p>检测框定位 → IQ 提取 → 调制分类</p></div><span class="small-ghost">XCiT V4</span></div>
+              <div class="target-chooser"><span>选择检测目标</span><div id="target-buttons" class="target-chips"></div></div>
+              <div class="signal-key-result"><span>预测调制家族</span><strong id="target-family">—</strong><span>57 类细粒度预测</span><strong id="target-fine">—</strong></div>
+              <div class="result-mini-grid"><div><span>YOLO 置信度</span><strong id="target-yolo-conf">—</strong></div><div><span>中心频率</span><strong id="target-center">—</strong></div><div><span>信号带宽</span><strong id="target-bandwidth">—</strong></div><div><span>时间长度</span><strong id="target-duration">—</strong></div></div>
+              <div class="target-gt"><span>真实类别（仅用于评估）</span><strong id="target-gt">—</strong></div>
+              <div id="target-top5-wrap" class="top5-wrap"><div class="top5-header"><strong>XCiT Top-5 分类候选</strong><span>概率</span></div><div id="target-top5"></div></div>
+              <div class="stage-explainer" id="spectrum-stage-explainer"><span id="spectrum-explainer-title">阶段说明</span><p id="spectrum-explainer-body">观察宽带输入的时频分布，尚未展示检测与识别结果。</p></div>
+              <div class="step-actions"><button class="button button-quiet" id="spectrum-prev" type="button">上一步</button><button class="button button-primary" id="spectrum-next" type="button">下一步</button></div>
+            </aside>
+          </div>
+          <article class="panel detections-panel"><div class="panel-heading"><div><h4>本图检测目标</h4><p>点击任一行可以选中检测框，查看对应的分类详情</p></div><span id="spectrum-matched-stats" class="small-ghost">—</span></div><div class="table-scroller"><table class="result-table"><thead><tr><th>目标</th><th>YOLO 置信度</th><th>中心频率</th><th>带宽</th><th>预测家族</th><th>细粒度预测</th><th>真实类别</th></tr></thead><tbody id="spectrum-target-tbody"></tbody></table></div></article>
+        </section>
+        <section class="analysis-section" aria-label="频谱检测与分类批量评估"><div class="section-heading"><div><h3>批量实验表现</h3><p>YOLO 检测和 XCiT 分类使用不同的评测批次，分别展示其真实统计结果</p></div><span class="outline-tag">独立批量统计</span></div>
+          <div class="spectrum-metric-strip"><div><span>YOLO mAP@0.5</span><strong id="metric-map50">—</strong><small>Seed 42 · 50 张图</small></div><div><span>YOLO mAP@0.5:0.95</span><strong id="metric-map95">—</strong><small>Seed 42 · 50 张图</small></div><div><span>XCiT V4 家族准确率</span><strong id="metric-family">—</strong><small>Seed 161803 · 匹配目标</small></div><div><span>57 类 Top-1</span><strong id="metric-fine">—</strong><small>Seed 161803 · 匹配目标</small></div></div>
+          <article class="panel chart-panel"><div class="panel-heading"><div><h4 id="spectrum-insights-title">XCiT V3 / V4 识别性能对比</h4><p id="spectrum-insights-description">同一批 100 张宽带图、381 个匹配目标</p></div><div class="display-switch compact" id="spectrum-insights-switch"><button type="button" data-insight="compare" class="active">模型对比</button><button type="button" data-insight="family">各调制家族</button><button type="button" data-insight="training">训练过程</button></div></div><div id="spectrum-insights-content" class="spectrum-insights-slot"></div></article>
+        </section>
+      </section>
+    </main>
+    <footer class="page-footer"><span>RF-SepEdge · 基于真实实验记录的离线回放界面</span><span id="footer-data-origin">MIT RF Challenge · TorchSig 2.1.1</span></footer>
+  </div>
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="图像放大查看"><button type="button" id="lightbox-close" class="lightbox-close" aria-label="关闭放大图片">✕ 关闭</button><img id="lightbox-image" src="" alt="放大的实验图像"/></div>
+</body>
+</html>
