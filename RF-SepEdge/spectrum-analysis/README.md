@@ -16,7 +16,7 @@ TorchSig 宽带复数 IQ → 频谱图 → YOLO11n 检测框 → 按时间/频�
 | `xcit_inference_v211.py` | 在官方风格窄带数据上独立运行 XCiT，默认使用官方窄带 checkpoint。它用于验证原始窄带分类能力，不应默认换成联合 V3。 |
 | `combined_inference.py` | 正式单图联合入口：YOLO 检测、IQ 截取、负号下变频、滤波、重采样、RMS 归一化和 XCiT 分类都在此串联；其中 `extract_iq()` 是唯一正式 IQ 提取实现。默认使用联合 V3。 |
 | `benchmark_combined.py` | 在多张宽带样本上批量评估完整 YOLO→IQ→XCiT 流程，并报告检测、匹配目标分类和全部 GT 端到端召回率。默认使用联合 V3，也可通过参数切换为官方权重。 |
-| `finetune_xcit_joint.py` | 包含 `prepare` 和 `train` 两个子命令：前者使用 GT 框生成联合输入数据，后者从指定 checkpoint 微调并另存副本。训练集和验证集必须使用不同 seed。 |
+| `finetune_xcit_joint.py` | 包含 `prepare` 和 `train` 两个子命令：前者使用 GT 框生成联合输入数据，后者从指定 checkpoint 微调并另存副本。训练目标由 57 类细分类损失和调制家族损失组成，家族损失权重可配置；训练集和验证集必须使用不同 seed。 |
 | `configs/wideband_clean_val_all.yaml` | 宽带 TorchSig 数据生成配置，供 YOLO、联合推理和联合训练数据准备使用。 |
 | `configs/narrowband_clean_val_all.yaml` | 官方风格窄带数据配置，仅用于独立 XCiT 测试及窄带能力对照。 |
 | `models/yolo11n_wideband_v1.0.0.pt` | 正式 YOLO11n 宽带检测权重。 |
@@ -142,16 +142,18 @@ CUDA_VISIBLE_DEVICES=1 python benchmark_combined.py \
 
 已有 V3 可以直接运行；只有在需要重新训练或继续优化细分类准确率时，才执行以下步骤。
 
+下一轮只使用已经接入的 TorchSig，不引入外部数据集。计划把训练宽带混合样本从 2,000 增加到 10,000，把验证宽带混合样本从 400 增加到 2,000；按照当前每个混合样本约四个目标估算，将分别产生约 4 万和 8 千个截取 IQ。实际样本数以生成后的 JSON 清单为准。
+
 ### 6. 分别准备训练集和验证集
 
 ```bash
 python finetune_xcit_joint.py prepare \
-  --mixtures 2000 --seed 50001 \
-  --out data/joint_xcit_new/train_seed50001_m2000.npz
+  --mixtures 10000 --seed 51042 \
+  --out data/joint_xcit_v4/train_seed51042_m10000.npz
 
 python finetune_xcit_joint.py prepare \
-  --mixtures 400 --seed 50002 \
-  --out data/joint_xcit_new/val_seed50002_m400.npz
+  --mixtures 2000 --seed 61042 \
+  --out data/joint_xcit_v4/val_seed61042_m2000.npz
 ```
 
 `prepare` 使用 GT 框和正式 `extract_iq()` 生成 `2×4096` 输入。训练与验证必须采用不同 seed，且输出路径不能指向已有文件。
@@ -160,26 +162,26 @@ python finetune_xcit_joint.py prepare \
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 python finetune_xcit_joint.py train \
-  --train-data data/joint_xcit_new/train_seed50001_m2000.npz \
-  --val-data data/joint_xcit_new/val_seed50002_m400.npz \
-  --base-checkpoint models/xcit_narrowband_v1.0.0.ckpt \
-  --out-checkpoint models/finetuned/xcit_joint_new.ckpt \
-  --history output/finetune_xcit_joint_new/history.json \
+  --train-data data/joint_xcit_v4/train_seed51042_m10000.npz \
+  --val-data data/joint_xcit_v4/val_seed61042_m2000.npz \
+  --base-checkpoint models/finetuned/xcit_joint_v3.ckpt \
+  --out-checkpoint models/finetuned/xcit_joint_v4_candidate.ckpt \
+  --history output/finetune_xcit_joint_v4_candidate/history.json \
   --epochs 10 --batch-size 32 \
-  --learning-rate 1e-5 --device cuda
+  --learning-rate 5e-6 --family-loss-weight 0.5 --device cuda
 ```
 
-该命令不会覆盖基础权重，会按照验证集细分类准确率保存最佳副本。若从现有联合模型继续训练，可把 `--base-checkpoint` 改为 `models/finetuned/xcit_joint_v3.ckpt`，并适当降低学习率。
+总训练损失为 `57类交叉熵 + family_loss_weight × 家族交叉熵`。家族概率仍与推理阶段一致，由属于同一家族的 57 类概率相加得到。`--family-loss-weight 0` 可作为只使用旧版 57 类损失的对照组；建议先比较 `0` 与 `0.5`，不要在最终独立测试集上选择权重。该命令不会覆盖 V3，会继续按照验证集细分类准确率保存最佳候选副本。
 
 ### 8. 用新的 checkpoint 做联合验证
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 python benchmark_combined.py \
-  --samples 50 --seed 60001 --device 0 \
-  --xcit-weights models/finetuned/xcit_joint_new.ckpt \
-  --out output/combined_joint_new_seed60001
+  --samples 100 --seed 161803 --device 0 \
+  --xcit-weights models/finetuned/xcit_joint_v4_candidate.ckpt \
+  --out output/combined_joint_v4_candidate_seed161803
 ```
 
-最终测试应使用未参与训练、验证和参数选择的新 seed。确认新权重在独立测试上优于 V3 后，才能考虑修改正式默认权重。
+Seed 161803 只用于候选方案和家族损失权重确定后的最终测试，不参与训练、验证或参数选择。确认新权重在新的独立测试上优于 V3 后，才能考虑修改正式默认权重；原有 Seed 314159 和 271828 继续保留为历史 V3 证据，不用于本轮调参。
 
 不同实验必须使用新的输出目录。不得覆盖官方模型、既有基线结果或其他随机种子的测试结果。

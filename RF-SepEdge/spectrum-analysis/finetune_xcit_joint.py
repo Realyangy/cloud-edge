@@ -51,6 +51,10 @@ def build_parser() -> argparse.ArgumentParser:
     train.add_argument("--batch-size", type=int, default=32)
     train.add_argument("--learning-rate", type=float, default=1e-5)
     train.add_argument("--weight-decay", type=float, default=1e-4)
+    train.add_argument(
+        "--family-loss-weight", type=float, default=0.5,
+        help="Weight of the modulation-family loss added to the 57-class loss",
+    )
     train.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
     train.add_argument("--seed", type=int, default=20261023)
     return parser
@@ -160,15 +164,34 @@ def family_projection(device: str) -> tuple[list[str], torch.Tensor]:
     return families, projection
 
 
+def hierarchical_losses(
+    logits: torch.Tensor,
+    labels: torch.Tensor,
+    projection: torch.Tensor,
+    family_loss_weight: float,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Return total, 57-class, and family losses from one set of logits."""
+    fine_loss = functional.cross_entropy(logits, labels)
+    family_mask = projection.bool().unsqueeze(0)
+    family_logits = torch.logsumexp(
+        logits.unsqueeze(2).masked_fill(~family_mask, float("-inf")), dim=1
+    )
+    family_labels = projection[labels].argmax(dim=1)
+    family_loss = functional.cross_entropy(family_logits, family_labels)
+    total_loss = fine_loss + family_loss_weight * family_loss
+    return total_loss, fine_loss, family_loss
+
+
 def evaluate(
     model: XCiTClassifier,
     loader: DataLoader,
     device: str,
     projection: torch.Tensor,
+    family_loss_weight: float,
 ) -> dict:
     model.eval()
     total = fine_correct = family_correct = 0
-    loss_sum = 0.0
+    loss_sum = fine_loss_sum = family_loss_sum = 0.0
     with torch.inference_mode():
         for inputs, labels in loader:
             inputs = inputs.to(device=device, dtype=torch.float32, non_blocking=True)
@@ -178,7 +201,9 @@ def evaluate(
                 enabled=device.startswith("cuda"),
             ):
                 logits = model(inputs)
-                loss = functional.cross_entropy(logits, labels)
+                loss, fine_loss, family_loss = hierarchical_losses(
+                    logits, labels, projection, family_loss_weight
+                )
             probabilities = logits.float().softmax(dim=1)
             predicted = probabilities.argmax(dim=1)
             predicted_family = (probabilities @ projection).argmax(dim=1)
@@ -186,11 +211,15 @@ def evaluate(
             batch_size = len(labels)
             total += batch_size
             loss_sum += float(loss) * batch_size
+            fine_loss_sum += float(fine_loss) * batch_size
+            family_loss_sum += float(family_loss) * batch_size
             fine_correct += int((predicted == labels).sum())
             family_correct += int((predicted_family == true_family).sum())
     return {
         "samples": total,
         "loss": loss_sum / total,
+        "fine_loss": fine_loss_sum / total,
+        "family_loss": family_loss_sum / total,
         "fine_correct": fine_correct,
         "fine_accuracy": fine_correct / total,
         "family_correct": family_correct,
@@ -216,6 +245,8 @@ def save_checkpoint_copy(
 def train_model(args: argparse.Namespace) -> None:
     if args.epochs < 1 or args.batch_size < 1 or args.learning_rate <= 0:
         raise ValueError("epochs, batch-size and learning-rate must be positive")
+    if args.family_loss_weight < 0:
+        raise ValueError("--family-loss-weight must be non-negative")
     if args.out_checkpoint.resolve() == args.base_checkpoint.resolve():
         raise ValueError("The released base checkpoint must not be overwritten")
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -252,12 +283,15 @@ def train_model(args: argparse.Namespace) -> None:
             "batch_size": args.batch_size,
             "learning_rate": args.learning_rate,
             "weight_decay": args.weight_decay,
+            "family_loss_weight": args.family_loss_weight,
             "seed": args.seed,
         },
         "epochs": [],
     }
     started = time.perf_counter()
-    baseline = evaluate(model, val_loader, device, projection)
+    baseline = evaluate(
+        model, val_loader, device, projection, args.family_loss_weight
+    )
     history["baseline_validation"] = baseline
     print("Baseline validation:", baseline, flush=True)
     best_fine = baseline["fine_accuracy"]
@@ -272,8 +306,8 @@ def train_model(args: argparse.Namespace) -> None:
 
     for epoch in range(1, args.epochs + 1):
         model.train()
-        total = correct = 0
-        loss_sum = 0.0
+        total = correct = family_correct = 0
+        loss_sum = fine_loss_sum = family_loss_sum = 0.0
         for inputs, labels in train_loader:
             inputs = inputs.to(device=device, dtype=torch.float32, non_blocking=True)
             labels = labels.to(device=device, non_blocking=True)
@@ -283,19 +317,32 @@ def train_model(args: argparse.Namespace) -> None:
                 enabled=device.startswith("cuda"),
             ):
                 logits = model(inputs)
-                loss = functional.cross_entropy(logits, labels)
+                loss, fine_loss, family_loss = hierarchical_losses(
+                    logits, labels, projection, args.family_loss_weight
+                )
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             batch_size = len(labels)
             total += batch_size
             loss_sum += float(loss.detach()) * batch_size
+            fine_loss_sum += float(fine_loss.detach()) * batch_size
+            family_loss_sum += float(family_loss.detach()) * batch_size
             correct += int((logits.detach().argmax(dim=1) == labels).sum())
-        validation = evaluate(model, val_loader, device, projection)
+            probabilities = logits.detach().float().softmax(dim=1)
+            predicted_family = (probabilities @ projection).argmax(dim=1)
+            true_family = projection[labels].argmax(dim=1)
+            family_correct += int((predicted_family == true_family).sum())
+        validation = evaluate(
+            model, val_loader, device, projection, args.family_loss_weight
+        )
         record = {
             "epoch": epoch,
             "train_loss": loss_sum / total,
+            "train_fine_loss": fine_loss_sum / total,
+            "train_family_loss": family_loss_sum / total,
             "train_fine_accuracy": correct / total,
+            "train_family_accuracy": family_correct / total,
             "validation": validation,
         }
         history["epochs"].append(record)
