@@ -1,6 +1,6 @@
 # 信号分离与恢复：MIT Sionna + WaveNet
 
-**状态（2026-10-28）**：QPSK 与 OFDM-QPSK 两类目标信号、CommSignal2 干扰的 Seed 42 本地基线已完成。四种现有干扰的数据和预训练权重均已就绪，生成、推理和 BER 脚本现已支持按 `--interference` 选择干扰；其余三种干扰的正式实验等待 GPU 空闲后执行。该任务与 `spectrum-analysis` 独立运行。
+**状态（2026-10-28）**：QPSK 与 OFDM-QPSK 两类目标信号、四种现有干扰的 Seed 42 本地实验均已完成。生成、推理和 BER 脚本支持按 `--interference` 选择干扰。该任务与 `spectrum-analysis` 独立运行。
 
 ## 数据、模型与环境
 
@@ -11,9 +11,26 @@
 - 环境一：`rf-sionna`（Python 3.7.13、TensorFlow 2.8.2、Sionna 0.10.0；**CPU 生成/解调**）。
 - 环境二：`rf-spectrum`（Python 3.10、PyTorch 2.9.1+cu128；**GPU WaveNet 推理**）。
 
+## 目录结构
+
+```text
+signal-separation/
+├── dataset/                   # 四类原始干扰与 TestSet1 干扰帧
+├── pretrained-models/         # 官方 U-Net、WaveNet 预训练权重
+├── rfchallenge/               # MIT RF Challenge 0.2.0 官方代码
+├── output/                    # 本地生成、恢复、BER 与汇总结果（Git 忽略）
+├── mit_sionna_official_smoke.py   # 生成混合 IQ、目标 IQ 和比特真值
+├── mit_sionna_wavenet_infer.py    # 调用对应 WaveNet 权重恢复目标 IQ
+├── mit_sionna_official_ber.py     # 官方解调辅助函数与 BER/MSE 评估
+├── summarize_sinr.py              # 按标称 SINR 汇总逐样本结果
+└── README.md
+```
+
+正式流程只需要依次运行上述四个顶层脚本。`rfchallenge/` 保留官方实现供脚本调用和结果溯源，`dataset/` 与 `pretrained-models/` 不应在实验过程中改写。
+
 ## 最终复现命令
 
-以下命令在 `signal-separation/` 目录依次执行。默认 GPU 示例是 `CUDA_VISIBLE_DEVICES=1`；如服务器 GPU 编号变化，请自行调整。
+以下命令在 `signal-separation/` 目录依次执行。默认 GPU 示例是 `CUDA_VISIBLE_DEVICES=0`；如服务器 GPU 编号或占用情况变化，请自行调整。
 
 ```bash
 cd ~/Sata2/lyy/cloud-edge/RF-SepEdge/signal-separation
@@ -27,7 +44,7 @@ CUDA_VISIBLE_DEVICES=-1 python mit_sionna_official_smoke.py \
 
 # 2. WaveNet 恢复 IQ
 conda activate rf-spectrum
-CUDA_VISIBLE_DEVICES=1 python mit_sionna_wavenet_infer.py \
+CUDA_VISIBLE_DEVICES=0 python mit_sionna_wavenet_infer.py \
   --interference CommSignal2 \
   --source output/mit_sionna_seed42 \
   --out output/mit_sionna_seed42_infer --batch-size 1
@@ -49,9 +66,9 @@ python summarize_sinr.py \
 
 `mit_sionna_wavenet_infer.py` 和 `mit_sionna_official_ber.py` 会同时读取生成阶段的 `summary.json`，并检查命令行干扰类型是否与数据一致，防止误用其他干扰对应的权重或文件。
 
-## 四种干扰的待运行实验
+## 四种干扰的完整批量复现
 
-GPU 空闲后，可在 `signal-separation/` 目录运行下面的循环。每种干扰分别生成独立输出目录，不会覆盖现有 CommSignal2 结果。
+GPU 空闲后，可在 `signal-separation/` 目录运行下面的循环。每种干扰分别生成独立输出目录；如目录已有结果，请更换输出目录名，脚本不会覆盖非空目录。
 
 ```bash
 for interference in CommSignal2 CommSignal3 CommSignal5G1 EMISignal1; do
@@ -63,7 +80,7 @@ for interference in CommSignal2 CommSignal3 CommSignal5G1 EMISignal1; do
       --samples-per-sinr 10 --sinrs=-24,-18,-15,-12,-9,-6,0 \
       --seed 42 --out "output/${slug}_seed42"
 
-  conda run -n rf-spectrum env CUDA_VISIBLE_DEVICES=1 \
+  conda run -n rf-spectrum env CUDA_VISIBLE_DEVICES=0 \
     python mit_sionna_wavenet_infer.py \
       --interference "$interference" \
       --source "output/${slug}_seed42" \
@@ -84,18 +101,37 @@ for interference in CommSignal2 CommSignal3 CommSignal5G1 EMISignal1; do
 done
 ```
 
-第一次正式执行时可以先将 `--samples-per-sinr 10` 临时改为 `1`，确认四种干扰均能完成数据生成、权重选择、推理和解调，再运行完整规模。当前 GPU 不可用时不要启动上述循环。
+首次在新环境执行时，可以先将 `--samples-per-sinr 10` 临时改为 `1`，确认数据生成、权重选择、推理和解调均正常，再运行完整规模。
 
-### 保留的四类输出
+### 每类实验的四阶段输出
+
+以下以 `<name>` 表示干扰的小写名称，例如 `commsignal3`。早期保留的 CommSignal2 基线使用兼容目录名 `mit_sionna_seed42*`。
 
 | 路径（均在 `output/` 下） | 内容 |
 |---|---|
-| `mit_sionna_seed42/` | 官方生成器的小规模混合 IQ、真值 SOI、比特真值与生成参数 |
-| `mit_sionna_seed42_infer/` | 两种信号的 WaveNet 恢复 IQ `.npy` 与波形误差汇总 |
-| `mit_sionna_seed42_ber/` | 逐样本 BER/MSE、解调比特与总览 |
-| `mit_sionna_seed42_report/` | 最终按 7 档 SINR 分组的 `by_sinr.csv`、`summary.json` |
+| `<name>_seed42/` | 官方生成器的小规模混合 IQ、真值 SOI、比特真值与生成参数 |
+| `<name>_seed42_infer/` | 两种信号的 WaveNet 恢复 IQ `.npy` 与波形误差汇总 |
+| `<name>_seed42_ber/` | 逐样本 BER/MSE、解调比特与总览 |
+| `<name>_seed42_report/` | 最终按 7 档 SINR 分组的 `by_sinr.csv`、`summary.json` |
 
-## 结果：Seed 42 / 每档 10 条
+## 四类干扰的总体结果：Seed 42 / 每档 10 条
+
+每个干扰包含 QPSK 与 OFDM-QPSK，各使用 7 档 SINR、每档 10 条，即每类干扰共 140 条记录。
+
+| 干扰 | 目标信号 | 输入 BER | WaveNet BER |
+|---|---|---:|---:|
+| CommSignal2 | QPSK | 17.291% | **1.724%** |
+| CommSignal2 | OFDM-QPSK | 29.890% | **9.926%** |
+| CommSignal3 | QPSK | 24.555% | **18.683%** |
+| CommSignal3 | OFDM-QPSK | 32.576% | **28.965%** |
+| CommSignal5G1 | QPSK | 27.194% | **1.224%** |
+| CommSignal5G1 | OFDM-QPSK | 13.176% | **3.156%** |
+| EMISignal1 | QPSK | 32.247% | **0.033%** |
+| EMISignal1 | OFDM-QPSK | 13.855% | **1.568%** |
+
+WaveNet 对四类干扰均降低了 BER，但 `CommSignal3` 的改善明显较弱。当前统计表明它具有宽带、持续且高度平稳的通信干扰特征，与目标波形特别是 OFDM-QPSK 更难分离。以上是本地 Seed 42 小规模实验，不是官方隐藏测试集成绩；后续如需形成稳定结论，应增加独立随机种子。
+
+### CommSignal2 分档结果
 
 | 标称 SINR | QPSK 输入 BER | QPSK WaveNet BER | OFDM-QPSK 输入 BER | OFDM-QPSK WaveNet BER |
 |---:|---:|---:|---:|---:|
