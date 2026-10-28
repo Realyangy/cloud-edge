@@ -17,6 +17,7 @@ RF-SepEdge/
 ├── AUDIT.md                         # 代码整理前的历史源码审查记录
 ├── requirements-rf-sionna.txt      # Sionna 数据生成与解调环境
 ├── requirements-rf-spectrum.txt    # WaveNet、YOLO 和 XCiT 环境
+├── demo-results/                    # 供网页直接读取的轻量 JSON/CSV 运行结果
 ├── signal-separation/
 │   ├── mit_sionna_official_smoke.py
 │   ├── mit_sionna_wavenet_infer.py
@@ -117,6 +118,7 @@ python -c "import torch, torchsig, ultralytics; from torchsig_models.models impo
 
 - [WaveNet：数据生成 → 推理 → 官方解调 → SINR 汇总](signal-separation/README.md)
 - [YOLO + XCiT：物理测试 → YOLO 评测 → 联合 V4 推理与评测 → 可选重新微调](spectrum-analysis/README.md)
+- [网页展示数据：信号分离 BER/MSE 与频谱检测/分类结果](demo-results/README.md)
 
 运行脚本前应按照上面的任务类型激活 `rf-sionna` 或 `rf-spectrum`。数据集和模型权重由 Git LFS 管理，克隆仓库前应先安装 Git LFS。
 

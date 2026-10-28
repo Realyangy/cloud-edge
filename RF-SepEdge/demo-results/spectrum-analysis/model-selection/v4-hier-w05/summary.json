@@ -1,0 +1,165 @@
+{
+  "dataset": "TorchSig 2.1.1 official clean validation CONFIG, freshly generated; not official stored holdout",
+  "config_sha256": "8424183a2a513a96664082dbeded11d2e7776fa3809bd2f6de708bb6941d87da",
+  "seed": 161803,
+  "samples": 100,
+  "confidence_threshold": 0.25,
+  "rms_targets": [
+    1.0
+  ],
+  "gt_matching_iou": 0.5,
+  "models": {
+    "yolo": "yolo11n_wideband_v1.0.0.pt",
+    "xcit": "xcit_joint_v4_hier_w05.ckpt"
+  },
+  "detection": {
+    "gt": 407,
+    "pred": 413,
+    "tp": 381,
+    "fp": 32,
+    "fn": 26,
+    "precision_at_fixed_conf": 0.9225181598062954,
+    "recall_at_fixed_conf": 0.9361179361179361
+  },
+  "classification": {
+    "without_rms": {
+      "matched_classified": 381,
+      "family_correct": 201,
+      "fine_correct": 76,
+      "family_accuracy_on_matched": 0.5275590551181102,
+      "fine_accuracy_on_matched": 0.1994750656167979,
+      "family_end_to_end_recall_on_all_gt": 0.49385749385749383,
+      "fine_end_to_end_recall_on_all_gt": 0.18673218673218672,
+      "family_by_gt": {
+        "AM": {
+          "gt_count": 29,
+          "matched_classified": 29,
+          "family_correct": 12,
+          "fine_correct": 7
+        },
+        "ASK/OOK": {
+          "gt_count": 29,
+          "matched_classified": 29,
+          "family_correct": 22,
+          "fine_correct": 7
+        },
+        "FM": {
+          "gt_count": 12,
+          "matched_classified": 11,
+          "family_correct": 6,
+          "fine_correct": 6
+        },
+        "FSK/GFSK": {
+          "gt_count": 65,
+          "matched_classified": 54,
+          "family_correct": 16,
+          "fine_correct": 10
+        },
+        "MSK/GMSK": {
+          "gt_count": 71,
+          "matched_classified": 67,
+          "family_correct": 27,
+          "fine_correct": 22
+        },
+        "OFDM": {
+          "gt_count": 80,
+          "matched_classified": 76,
+          "family_correct": 48,
+          "fine_correct": 6
+        },
+        "Other": {
+          "gt_count": 34,
+          "matched_classified": 29,
+          "family_correct": 6,
+          "fine_correct": 3
+        },
+        "PSK": {
+          "gt_count": 36,
+          "matched_classified": 35,
+          "family_correct": 28,
+          "fine_correct": 6
+        },
+        "QAM": {
+          "gt_count": 51,
+          "matched_classified": 51,
+          "family_correct": 36,
+          "fine_correct": 9
+        }
+      }
+    },
+    "with_rms": {
+      "matched_classified": 381,
+      "family_correct": 317,
+      "fine_correct": 142,
+      "family_accuracy_on_matched": 0.8320209973753281,
+      "fine_accuracy_on_matched": 0.37270341207349084,
+      "family_end_to_end_recall_on_all_gt": 0.7788697788697788,
+      "fine_end_to_end_recall_on_all_gt": 0.3488943488943489,
+      "family_by_gt": {
+        "AM": {
+          "gt_count": 29,
+          "matched_classified": 29,
+          "family_correct": 25,
+          "fine_correct": 18
+        },
+        "ASK/OOK": {
+          "gt_count": 29,
+          "matched_classified": 29,
+          "family_correct": 29,
+          "fine_correct": 11
+        },
+        "FM": {
+          "gt_count": 12,
+          "matched_classified": 11,
+          "family_correct": 6,
+          "fine_correct": 6
+        },
+        "FSK/GFSK": {
+          "gt_count": 65,
+          "matched_classified": 54,
+          "family_correct": 26,
+          "fine_correct": 20
+        },
+        "MSK/GMSK": {
+          "gt_count": 71,
+          "matched_classified": 67,
+          "family_correct": 54,
+          "fine_correct": 50
+        },
+        "OFDM": {
+          "gt_count": 80,
+          "matched_classified": 76,
+          "family_correct": 74,
+          "fine_correct": 7
+        },
+        "Other": {
+          "gt_count": 34,
+          "matched_classified": 29,
+          "family_correct": 19,
+          "fine_correct": 8
+        },
+        "PSK": {
+          "gt_count": 36,
+          "matched_classified": 35,
+          "family_correct": 34,
+          "fine_correct": 11
+        },
+        "QAM": {
+          "gt_count": 51,
+          "matched_classified": 51,
+          "family_correct": 50,
+          "fine_correct": 11
+        }
+      }
+    }
+  },
+  "extraction_errors": 0,
+  "notes": [
+    "All classifications are evaluated on identical YOLO predicted boxes.",
+    "Unnormalized input is reconstructed by multiplying the RMS-normalized IQ by its original RMS.",
+    "Each rms_target mode scales the same unit-RMS extracted IQ to the requested complex RMS.",
+    "Family is computed by SUMMING the 57 output-class probabilities, not mapping fine Top-1.",
+    "mAP is NOT reported here; the existing benchmark_yolo.py computes detection mAP.",
+    "Matched classification accuracy and end-to-end recall have different denominators."
+  ]
+}
